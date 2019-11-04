@@ -1,5 +1,6 @@
 import time
-
+import os
+os.system("pip3 install requests")
 from selenium import webdriver
 
 
@@ -21,7 +22,7 @@ driver = webdriver.Chrome(options=chrome_options)
 
 
 try:
-    url_list = ["https://bananarepublic.gap.com/browse/category.do?cid=5032&mlink=5001,,flyout_women_apparel_Sweaters&clink=15682852"]
+    url_list = ["https://bananarepublic.gap.com/browse/category.do?cid=69883&mlink=5001,,flyout_women_apparel_Dresses&clink=15682852"]
     image_urls = []
     for url in url_list:
         driver.get(url_list[0])
@@ -45,12 +46,17 @@ except:
     driver.close()
 
 image_urls = (set(image_urls))
+#image_urls = filter(lambda x: 'asset' in x, image_urls)
+
+
 #opens url, gets image, saves image.
 import requests
 i=1
 for url in image_urls:
     img_data = requests.get(url).content
-    f = open(f"{i}sweater.jpg", "wb")
+    f = open(f"{i}dresses.jpg", "wb")
     f.write(img_data)
     f.close()
     i+=1
+
+
