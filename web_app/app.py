@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request
-from flask_dropzone import Dropzone
+#from flask_dropzone import Dropzone
 
 
 app = Flask(__name__)
-dropzone = Dropzone(app)
+#dropzone = Dropzone(app)
 
 
 @app.route("/")

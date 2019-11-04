@@ -12,6 +12,7 @@ def get_image_urls(driver):
             if image_url not in image_links:
                 image_links.append(image_url)
                 print(image_url)
+    return(image_links)
 
 
 chrome_options = webdriver.ChromeOptions()
@@ -38,5 +39,6 @@ try:
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(5)
         get_image_urls(driver)
+        driver.close()
 except:
     driver.close()
