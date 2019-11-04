@@ -12,8 +12,8 @@ pip3 install -r requirements.txt`
 
 macOS
 
-Web driver for Chrome/Chromium
+Web driver for Chrome/Chromium:
 `brew install chromedriver`
 
-Web driver for Firefox
+Web driver for Firefox:
 `brew install geckodriver`
