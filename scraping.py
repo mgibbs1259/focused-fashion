@@ -17,6 +17,8 @@ def get_image_urls(driver):
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument("--disable-notifications")
 driver = webdriver.Chrome(chrome_options=chrome_options)
+
+
 try:
     url_list = ["https://oldnavy.gap.com/browse/category.do?cid=1035712&mlink=5360,1,W_3"]
     for url in url_list:
