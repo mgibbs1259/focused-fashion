@@ -20,9 +20,11 @@ driver = webdriver.Chrome(chrome_options=chrome_options)
 
 
 try:
-    url_list = ["https://oldnavy.gap.com/browse/category.do?cid=1035712&mlink=5360,1,W_3"]
+    url_list = ["https://bananarepublic.gap.com/browse/category.do?cid=5032&mlink=5343,17923647,w_divisionpage_sweaters&clink=17923647"]
     for url in url_list:
         driver.get(url_list[0])
+        time.sleep(3)
+        driver.find_element_by_css_selector(".universal-modal__close-button").click()
         time.sleep(3)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight*25/100);")
         time.sleep(5)
