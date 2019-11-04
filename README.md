@@ -14,6 +14,3 @@ macOS
 
 Web driver for Chrome/Chromium:
 `brew install chromedriver`
-
-Web driver for Firefox:
-`brew install geckodriver`
