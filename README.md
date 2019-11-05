@@ -8,8 +8,8 @@
 source testenv/bin/activate
 pip3 install -r requirements.txt`
 
-**Second, install the browser drivers:** 
+**Second, install the browser driver:** 
 
-macOS
+macOS 
 
 `brew install chromedriver`
