@@ -13,3 +13,6 @@ pip3 install -r requirements.txt`
 macOS 
 
 `brew install chromedriver`
+
+## Data
+http://mmlab.ie.cuhk.edu.hk/projects/DeepFashion/AttributePrediction.html
