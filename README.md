@@ -10,7 +10,7 @@ pip3 install -r requirements.txt`
 
 **Second, install the browser driver:** 
 
-macOS 
+*macOS* 
 
 `brew install chromedriver`
 
