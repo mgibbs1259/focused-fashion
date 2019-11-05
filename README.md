@@ -2,15 +2,13 @@
 
 ## Installation
 
-**First, create and activate a Python Virtual Environment for this project:**
+**First, create and activate a Python virtual environment:**
 
 `python3 -m venv testenv
 source testenv/bin/activate
 pip3 install -r requirements.txt`
 
-**Second, install the browser driver:** 
-
-*macOS* 
+**Second, install the Chrome browser driver:** 
 
 `brew install chromedriver`
 
