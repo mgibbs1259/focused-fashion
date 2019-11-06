@@ -13,5 +13,5 @@ source testenv/bin/activate
 pip3 install -r requirements.txt`
 
 ## Data
-https://www.kaggle.com/c/imaterialist-challenge-fashion-2018/overview
+https://github.com/visipedia/imat_fashion_comp
 https://www.kaggle.com/nlecoy/imaterialist-downloader-util
