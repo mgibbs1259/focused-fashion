@@ -40,7 +40,7 @@ def parse_dataset(_dataset, _outdir, _max=10000):
     :return: list of tuple containing absolute path and url of image
     """
     _fnames_urls = []
-    with open(dataset, 'r') as f:
+    with open(_dataset, 'r') as f:
         data = json.load(f)
         for image in data["images"]:
             url = image["url"]
@@ -49,15 +49,19 @@ def parse_dataset(_dataset, _outdir, _max=10000):
     return _fnames_urls[:_max]
 
 _dataset = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/train.json"
-_outdir = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output"
-parse_dataset(_dataset, _outdir, _max=10000)
+#_dataset = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/test.json"
+
+#_outdir = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_train"
+_outdir = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_train"
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
         print("error: not enough arguments")
         sys.exit(0)
 
+
     # get args and create output directory
+
     dataset, outdir = sys.argv[1:]
     if not os.path.exists(outdir):
         os.makedirs(outdir)
