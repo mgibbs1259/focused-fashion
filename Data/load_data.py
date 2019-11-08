@@ -9,6 +9,7 @@ import json
 import urllib3
 import multiprocessing
 
+import PIL
 from PIL import Image
 from tqdm import tqdm
 from urllib3.util import Retry
@@ -31,7 +32,7 @@ def download_image(fnames_and_urls):
         image_rgb.save(fname, format='JPEG', quality=90)
 
 
-def parse_dataset(_dataset, _outdir, _max=10000):
+def parse_dataset(_dataset, _outdir):
     """
     parse the dataset to create a list of tuple containing absolute path and url of image
     :param _dataset: dataset to parse
@@ -40,27 +41,20 @@ def parse_dataset(_dataset, _outdir, _max=10000):
     :return: list of tuple containing absolute path and url of image
     """
     _fnames_urls = []
-    with open(dataset, 'r') as f:
+    with open(_dataset, 'r') as f:
         data = json.load(f)
         for image in data["images"]:
             url = image["url"]
-            fname = os.path.join(outdir, "{}.jpg".format(image["imageId"]))
+            fname = os.path.join(_outdir, "{}.jpg".format(image["imageId"]))
             _fnames_urls.append((fname, url))
-    return _fnames_urls[:_max]
+    return _fnames_urls[:500000]
 
+_dataset = "/home/ubuntu/Final-Project-Group8/Data/train.json"
+_outdir = "/home/ubuntu/Final-Project-Group8/Data/output_train"
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        print("error: not enough arguments")
-        sys.exit(0)
-
-    # get args and create output directory
-    dataset, outdir = sys.argv[1:]
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-
     # parse json dataset file
-    fnames_urls = parse_dataset(dataset, outdir)
+    fnames_urls = parse_dataset(_dataset, _outdir)
 
     # download data
     pool = multiprocessing.Pool(processes=12)
