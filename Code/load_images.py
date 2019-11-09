@@ -1,6 +1,7 @@
 import os
 from collections import OrderedDict
 
+import numpy as np
 import pandas as pd
 from PIL import Image
 from torchvision import transforms, datasets
@@ -9,22 +10,18 @@ from torchvision import transforms, datasets
 IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 
 
-def obtain_image_sizes(img_dir):
-    """Obtain the size of each image in a given image directory."""
+def obtain_smallest_image_size(img_dir):
+    """Returns the dimensions of the smallest image in terms of area."""
     image_sizes = {}
     for image in os.listdir(img_dir):
         try:
             with Image.open(image) as img:
                 width, height = img.size
-                image_sizes[image] = (width, height)
+                image_sizes[image] = (width, height, width*height)
         except:
-            image_sizes[image] = (0, 0)
-    return image_sizes
-
-
-def determine_smallest_image_size(img_size_dict):
-    """Determine the smallest nonzero image size from a given image size dictionary."""
-
+            image_sizes[image] = (1000, 1000, 1000)
+    smallest_image = min(image_sizes, key=lambda k: image_sizes[k][2])
+    return image_sizes[smallest_image]
 
 
 def create_data_loader(img_dir):
