@@ -32,13 +32,8 @@ def create_data_loader(img_dir):
 
 
 
-
 # data_transform = transforms.Compose([
-#         transforms.RandomSizedCrop(224),
-#         transforms.RandomHorizontalFlip(),
-#         transforms.ToTensor(),
-#         transforms.Normalize(mean=[0.485, 0.456, 0.406],
-#                              std=[0.229, 0.224, 0.225])
+#         transforms.ToTensor()
 #     ])
 # hymenoptera_dataset = datasets.ImageFolder(root='hymenoptera_data/train',
 #                                            transform=data_transform)
