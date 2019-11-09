@@ -21,3 +21,5 @@ MultiLabelBinarizer
 https://www.kaggle.com/anqitu/for-starter-json-to-multilabel-in-24-seconds
 https://stackoverflow.com/questions/52855843/multi-label-classification-in-pytorch
 https://www.analyticsvidhya.com/blog/2019/04/build-first-multi-label-image-classification-model-python/
+https://github.com/utkuozbulak/pytorch-custom-dataset-examples
+https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
