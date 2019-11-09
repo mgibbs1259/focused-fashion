@@ -40,8 +40,10 @@ val_ann=validation['annotations']
 val_ann=pd.DataFrame(val_ann)
 validation=pd.merge(val_img_url, val_ann, on='imageId', how='inner')
 
+#create test with labels
 test2 = train_ann[700000:730000]
 
+#only keep first 500000 rows
 train_ann = train_ann[:500000]
 
 
