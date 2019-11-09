@@ -40,6 +40,11 @@ val_ann=validation['annotations']
 val_ann=pd.DataFrame(val_ann)
 validation=pd.merge(val_img_url, val_ann, on='imageId', how='inner')
 
+test2 = train_ann[700000:730000]
+
+train_ann = train_ann[:500000]
+
+
 datas = {'Train': train, 'Test': test, 'Validation': validation}
 for data in datas.values():
     data['imageId'] = data['imageId'].astype(np.uint32)
@@ -47,3 +52,4 @@ for data in datas.values():
 #write out val_ann and train_ann as csv
 train_ann.to_csv("train_ann.csv")
 val_ann.to_csv("val_ann.csv")
+test2.to_csv("test.csv")

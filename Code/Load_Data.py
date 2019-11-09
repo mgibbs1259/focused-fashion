@@ -47,10 +47,12 @@ def parse_dataset(_dataset, _outdir):
             url = image["url"]
             fname = os.path.join(_outdir, "{}.jpg".format(image["imageId"]))
             _fnames_urls.append((fname, url))
-    return _fnames_urls[:500000]
+    return _fnames_urls[700000:730000]
+
+#testset with labels... 700000:730000
 
 _dataset = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/train.json"
-_outdir = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_train"
+_outdir = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_test2"
 
 if __name__ == '__main__':
     # parse json dataset file
