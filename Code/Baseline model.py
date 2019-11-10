@@ -23,12 +23,13 @@ DROPOUT = 0.5
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, kernel_size=3)
-        self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2))
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=3)
-        self.convnorm2 = nn.BatchNorm2d(32)
-        self.pool2 = nn.MaxPool2d((2, 2))
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=(3, 3), stride=1, padding=1)
+        self.convnorm1 = nn.BatchNorm2d(32) # Why does padding not affect this?
+        self.pool1 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # What about padding here?
+
+        self.conv2 = nn.Conv2d(32, 64, kernel_size=(3, 3), stide=1, padding=1)
+        self.convnorm2 = nn.BatchNorm2d(64)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
 
     def forward(self, x):
         x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
