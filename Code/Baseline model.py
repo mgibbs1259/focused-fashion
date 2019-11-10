@@ -1,10 +1,8 @@
 import numpy as np
 import torch
-
-from torch import nn
-import torch.nn.functional as F
 import torch.optim as optim
-from torch.autograd import Variable
+import torch.nn.functional as F
+from torch import nn
 
 from Data import load_images
 
@@ -34,8 +32,10 @@ class CNN(nn.Module):
 DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 data_loader = load_images.create_data_loader(DATA_PATH, IMG_DIR)
+
 model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
+criterion =
 
 
 def train(epoch):
