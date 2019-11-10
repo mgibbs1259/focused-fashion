@@ -51,8 +51,8 @@ def parse_dataset(_dataset, _outdir):
 
 #testset with labels... 700000:730000
 
-_dataset = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/train.json"
-_outdir = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_test2"
+_dataset = "/home/ubuntu/Final-Project-Group8/Data/train.json"
+_outdir = "/home/ubuntu/Final-Project-Group8/Data/output_test"
 
 if __name__ == '__main__':
     # parse json dataset file
