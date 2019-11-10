@@ -47,7 +47,7 @@ class FashionDataset(Dataset):
         self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
 
     def __getitem__(self, index):
-        img = Image.open(self.img_dir_path + self.x_train[index] + '.jpg')
+        img = Image.open(self.img_dir_path + '/' + str(self.x_train[index]) + '.jpg')
         img = img.convert('RGB')
         if self.img_transform is not None:
             img = self.img_transform(img)
@@ -63,5 +63,5 @@ def create_data_loader(data_path, img_dir):
      img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BILINEAR),
                                          transforms.ToTensor()])
      dataset = FashionDataset(data_path, img_dir, img_transform)
-     loader = DataLoader(dataset, batch_size=1024, shuffle=True, num_workers=1, pin_memory=True)
+     loader = DataLoader(dataset, batch_size=256, shuffle=True, num_workers=1, pin_memory=True)
      return loader
