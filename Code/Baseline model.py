@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import torch.optim as optim
-import torch.nn.functional as F
+import torch.nn.functional as functional
 from torch import nn
 
 from Data import load_images
@@ -44,7 +44,7 @@ def train(epoch):
         data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
-        loss = F.binary_cross_entropy(output, target)
+        loss = functional.binary_cross_entropy(output, target)
         loss.backward()
         optimizer.step()
         if batch_idx % 10 == 0:
