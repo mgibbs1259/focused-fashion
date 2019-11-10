@@ -14,6 +14,11 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
+LR = 5e-2
+N_EPOCHS = 30
+DROPOUT = 0.5
+
+
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -33,6 +38,7 @@ DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 data_loader = load_images.create_data_loader(DATA_PATH, IMG_DIR)
 
+
 model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 criterion = functional
@@ -47,6 +53,7 @@ def train(epoch):
         loss = functional.binary_cross_entropy(output, target)
         loss.backward()
         optimizer.step()
+
         if batch_idx % 10 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, batch_idx * len(data), len(data_loader.dataset),
