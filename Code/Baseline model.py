@@ -24,26 +24,20 @@ class CNN(nn.Module):
         self.pool1 = nn.MaxPool2d((2, 2))
 
     def forward(self, x):
-        x = F.relu(F.max_pool2d(self.conv1(x), 2))
-        x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2))
-        x = x.view(x.size(0), -1) # Flatten layer
-        x = F.relu(self.fc1(x))
-        x = F.dropout(x, training=self.training)
-        x = self.fc2(x)
-        return F.sigmoid(x)
+
 
 
 DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 data_loader = load_images.create_data_loader(DATA_PATH, IMG_DIR)
-model = Net().to(device)
+model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 
 
 def train(epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(data_loader):
-        data, target = data.to(device), target.to(device) # On GPU
+        data, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         output = model(data)
         loss = F.binary_cross_entropy(output, target)
