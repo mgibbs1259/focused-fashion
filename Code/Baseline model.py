@@ -16,14 +16,12 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-class Net(nn.Module):
+class CNN(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, kernel_size=3)
-        self.conv2 = nn.Conv2d(32, 64, kernel_size=3)
-        self.conv2_drop = nn.Dropout2d()
-        self.fc1 = nn.Linear(2304, 256)
-        self.fc2 = nn.Linear(256, 17)
+        super(CNN, self).__init__()
+        self.conv1 = nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1)
+        self.convnorm1 = nn.BatchNorm2d(32)
+        self.pool1 = nn.MaxPool2d((2, 2))
 
     def forward(self, x):
         x = F.relu(F.max_pool2d(self.conv1(x), 2))
