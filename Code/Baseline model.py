@@ -41,7 +41,6 @@ data_loader = load_images.create_data_loader(DATA_PATH, IMG_DIR)
 
 model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
-criterion = functional
 
 
 def train_model(epoch):
