@@ -16,6 +16,7 @@ torch.backends.cudnn.benchmark = False
 
 LR = 5e-2
 N_EPOCHS = 5
+BATCH_SIZE = 256
 DROPOUT = 0.5
 
 
@@ -36,7 +37,7 @@ class CNN(nn.Module):
 
 DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
-data_loader = load_images.create_data_loader(DATA_PATH, IMG_DIR)
+data_loader = load_images.create_data_loader(DATA_PATH, IMG_DIR, BATCH_SIZE)
 
 
 model = CNN().to(device)
