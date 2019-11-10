@@ -58,10 +58,10 @@ class FashionDataset(Dataset):
         return self.x_train.shape[0]
 
 
-def create_data_loader(data_path, img_dir):
+def create_data_loader(data_path, img_dir, batch_size):
      """Returns an image loader for the model."""
      img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BILINEAR),
                                          transforms.ToTensor()])
      dataset = FashionDataset(data_path, img_dir, img_transform)
-     loader = DataLoader(dataset, batch_size=256, shuffle=True, num_workers=1, pin_memory=True)
+     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=1, pin_memory=True)
      return loader
