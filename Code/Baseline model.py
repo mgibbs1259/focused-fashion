@@ -15,7 +15,7 @@ torch.backends.cudnn.benchmark = False
 
 
 LR = 5e-2
-N_EPOCHS = 30
+N_EPOCHS = 5
 DROPOUT = 0.5
 
 
@@ -44,7 +44,7 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 criterion = functional
 
 
-def train(epoch):
+def train_model(epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(data_loader):
         data, target = data.to(device), target.to(device)
@@ -60,5 +60,5 @@ def train(epoch):
                 100. * batch_idx / len(data_loader), loss.data[0]))
 
 
-for epoch in range(1, 2):
-    train(epoch)
+for epoch in range(N_EPOCHS):
+    train_model(epoch)
