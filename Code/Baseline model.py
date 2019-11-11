@@ -49,6 +49,7 @@ class CNN(nn.Module):
 # TEST_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_test"
 # test_data_loader = load_images.create_data_loader(TEST_DATA_PATH, TEST_IMG_DIR, BATCH_SIZE)
 
+
 VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, BATCH_SIZE)
