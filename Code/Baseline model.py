@@ -31,10 +31,10 @@ class CNN(nn.Module):
         self.convnorm2 = nn.BatchNorm2d(64)
         self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 8, 8)
 
-        self.linear1 = nn.Linear(64*8*8, ?)
-        self.linear1_bn = nn.BatchNorm1d(?)
+        self.linear1 = nn.Linear(64*8*8, 256)
+        self.linear1_bn = nn.BatchNorm1d(256)
         self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(?, ?)
+        self.linear2 = nn.Linear(256, 228)
         self.act = torch.relu
 
 
