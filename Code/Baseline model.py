@@ -2,7 +2,6 @@ import numpy as np
 import torch
 from torch import nn
 import torch.optim as optim
-import torch.nn.functional as functional
 
 from Data import load_images
 
@@ -35,13 +34,15 @@ class CNN(nn.Module):
         self.linear1_bn = nn.BatchNorm1d(256)
         self.drop = nn.Dropout(DROPOUT)
         self.linear2 = nn.Linear(256, 228)
+
         self.act = torch.relu
 
     def forward(self, x):
         x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
         x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
         x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
-        return functional.sigmoid(x)
+        print(torch.sigmoid(x))
+        return torch.sigmoid(x)
 
 
 DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
@@ -51,22 +52,27 @@ data_loader = load_images.create_data_loader(DATA_PATH, IMG_DIR, BATCH_SIZE)
 
 model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
+criterion = nn.BCEWithLogitsLoss()
 
 
 def train_model(epoch):
-    model.train()
-    for batch_idx, (data, target) in enumerate(data_loader):
-        data, target = data.to(device), target.to(device)
+    loss_train = 0.0
+
+    for idx, (data, target) in enumerate(data_loader):
+        model_input, target = data.to(device), target.to(device)
         optimizer.zero_grad()
-        output = model(data)
-        loss = functional.binary_cross_entropy(output, target)
+        model_output = model(model_input)
+        loss = criterion(model_output, target)
         loss.backward()
         optimizer.step()
 
-        if batch_idx % 10 == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch, batch_idx * len(data), len(data_loader.dataset),
-                100. * batch_idx / len(data_loader), loss.data[0]))
+        loss_train += loss.item()
+        if idx % 2000 == 1999:  # Print every 2000
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, idx + 1, loss_train / 2000))
+            loss_train = 0.0
+
+        print('Finished training')
 
 
 for epoch in range(N_EPOCHS):
