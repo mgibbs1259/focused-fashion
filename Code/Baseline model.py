@@ -31,17 +31,16 @@ class CNN(nn.Module):
         self.convnorm2 = nn.BatchNorm2d(64)
         self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 8, 8)
 
-        self.linear1 = nn.Linear(64*8*8, 256)
+        self.linear1 = nn.Linear(64*8*8, 256) # Input will be flattened to (n_examples, 64, 8, 8)
         self.linear1_bn = nn.BatchNorm1d(256)
         self.drop = nn.Dropout(DROPOUT)
         self.linear2 = nn.Linear(256, 228)
         self.act = torch.relu
 
-
     def forward(self, x):
         x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
         x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
-
+        x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
         return functional.sigmoid(x)
 
 
