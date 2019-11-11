@@ -9,7 +9,7 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
-DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
+DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test_ann.csv"
 IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 
 
@@ -24,7 +24,8 @@ def obtain_smallest_image_size(img_dir):
                 image_sizes[image] = (width, height, width * height)
                 print(image_sizes[image])
         except:
-            pass
+            with open('bad_images.txt', 'a') as file:
+                file.write(image)
     smallest_image = min(image_sizes, key=lambda k: image_sizes[k][2])
     return image_sizes[smallest_image]
 
@@ -63,5 +64,5 @@ def create_data_loader(data_path, img_dir, batch_size):
      img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BILINEAR),
                                          transforms.ToTensor()])
      dataset = FashionDataset(data_path, img_dir, img_transform)
-     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=-1, pin_memory=True)
+     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0, pin_memory=True)
      return loader
