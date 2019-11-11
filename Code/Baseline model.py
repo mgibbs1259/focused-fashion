@@ -60,8 +60,6 @@ criterion = nn.BCEWithLogitsLoss()
 
 
 def train_model(epoch):
-    loss_train = 0.0
-
     for idx, (data, target) in enumerate(val_data_loader):
         model_input, target = data.to(device), target.to(device)
         optimizer.zero_grad()
