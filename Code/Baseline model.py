@@ -33,7 +33,7 @@ class CNN(nn.Module):
         self.linear1 = nn.Linear(64*8*8, 256) # Input will be flattened to (n_examples, 64, 8, 8)
         self.linear1_bn = nn.BatchNorm1d(256)
         self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(256, 228)
+        self.linear2 = nn.Linear(256, 225)
 
         self.act = torch.relu
 
@@ -41,7 +41,7 @@ class CNN(nn.Module):
         x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
         x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
         x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
-        print(torch.sigmoid(x))
+        x = self.linear2(x)
         return torch.sigmoid(x)
 
 
@@ -56,7 +56,7 @@ val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, BAT
 
 model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
-criterion = nn.BCEWithLogitsLoss()
+criterion = nn.BCELoss()
 
 
 def train_model(epoch):
