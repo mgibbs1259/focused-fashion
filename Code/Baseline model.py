@@ -27,7 +27,7 @@ class CNN(nn.Module):
         self.convnorm1 = nn.BatchNorm2d(32)
         self.pool1 = nn.MaxPool2d((2, 2), stride=2) # Output (n_examples, 32, 16, 16)
 
-        self.conv2 = nn.Conv2d(32, 64, (3, 3), stide=1, padding=1) # Output (n_examples, 64, 16, 16)
+        self.conv2 = nn.Conv2d(32, 64, (3, 3), stride=1, padding=1) # Output (n_examples, 64, 16, 16)
         self.convnorm2 = nn.BatchNorm2d(64)
         self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 8, 8)
 
