@@ -52,7 +52,7 @@ class FashionDataset(Dataset):
         if self.img_transform is not None:
             img = self.img_transform(img)
         img_label = torch.from_numpy(self.y_train[index])
-        return img, img_label
+        return img, img_label.float()
 
     def __len__(self):
         return self.x_train.shape[0]
@@ -63,5 +63,5 @@ def create_data_loader(data_path, img_dir, batch_size):
      img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BILINEAR),
                                          transforms.ToTensor()])
      dataset = FashionDataset(data_path, img_dir, img_transform)
-     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=1, pin_memory=True)
+     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=-1, pin_memory=True)
      return loader

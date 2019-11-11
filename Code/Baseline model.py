@@ -65,14 +65,14 @@ def train_model(epoch):
         model_input, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         model_output = model(model_input)
-        loss = criterion(model_output, target)
+        loss = criterion(model_output, target.float())
         loss.backward()
         optimizer.step()
 
         if idx % 10 == 0:
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                 epoch, idx * len(model_input), len(val_data_loader.dataset),
-                       100. * idx / len(val_data_loader), loss.data[0]))
+                       100. * idx / len(val_data_loader), loss.item()))
 
 
 for epoch in range(N_EPOCHS):
