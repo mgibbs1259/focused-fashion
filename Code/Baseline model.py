@@ -45,9 +45,13 @@ class CNN(nn.Module):
         return torch.sigmoid(x)
 
 
-DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
-IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
-data_loader = load_images.create_data_loader(DATA_PATH, IMG_DIR, BATCH_SIZE)
+# TEST_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test_ann.csv"
+# TEST_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_test"
+# test_data_loader = load_images.create_data_loader(TEST_DATA_PATH, TEST_IMG_DIR, BATCH_SIZE)
+
+VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
+VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
+val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, BATCH_SIZE)
 
 
 model = CNN().to(device)
@@ -58,7 +62,7 @@ criterion = nn.BCEWithLogitsLoss()
 def train_model(epoch):
     loss_train = 0.0
 
-    for idx, (data, target) in enumerate(data_loader):
+    for idx, (data, target) in enumerate(val_data_loader):
         model_input, target = data.to(device), target.to(device)
         optimizer.zero_grad()
         model_output = model(model_input)
@@ -66,13 +70,10 @@ def train_model(epoch):
         loss.backward()
         optimizer.step()
 
-        loss_train += loss.item()
-        if idx % 2000 == 1999:  # Print every 2000
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, idx + 1, loss_train / 2000))
-            loss_train = 0.0
-
-        print('Finished training')
+        if idx % 10 == 0:
+            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                epoch, idx * len(model_input), len(val_data_loader.dataset),
+                       100. * idx / len(val_data_loader), loss.data[0]))
 
 
 for epoch in range(N_EPOCHS):
