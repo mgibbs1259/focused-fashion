@@ -23,3 +23,15 @@ https://stackoverflow.com/questions/52855843/multi-label-classification-in-pytor
 https://www.analyticsvidhya.com/blog/2019/04/build-first-multi-label-image-classification-model-python/
 https://github.com/utkuozbulak/pytorch-custom-dataset-examples
 https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
+
+## TO DO
+1) Data loader bar - Mary
+2) Script to check images vs json - Jessica
+3) Add script to save model - Jessica
+4) Hooking up train and test - Mary 
+5) Excel sheet for tracking hyperparameters/models - Jessica
+5) Model architecture/tuning - Both
+6) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
+7) Web App - Mary 
+8) Presentation - Both
+9) Joint report - Both
