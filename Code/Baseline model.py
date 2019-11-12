@@ -77,3 +77,7 @@ def train_model(epoch):
 
 for epoch in range(N_EPOCHS):
     train_model(epoch)
+
+#saves model
+
+torch.save(net.state_dict(), 'baseline_model.pkl')
