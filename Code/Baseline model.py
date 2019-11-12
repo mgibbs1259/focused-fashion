@@ -93,4 +93,4 @@ for epoch in range(N_EPOCHS):
         #                100. * train_idx / len(train_data_loader), loss.item()))
 
 #saves model
-#torch.save(net.state_dict(), 'baseline_model.pkl')
+#torch.save(model.state_dict(), 'baseline_model.pkl')
