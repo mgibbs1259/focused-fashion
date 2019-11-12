@@ -31,7 +31,8 @@ https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
 4) Hooking up train and test - Mary 
 5) Excel sheet for tracking hyperparameters/models - Jessica
 5) Model architecture/tuning - Both
-6) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
-7) Web App - Mary 
-8) Presentation - Both
-9) Joint report - Both
+6) Pre-trained models/ensembling - Both
+7) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
+8) Web App - Mary 
+9) Presentation - Both
+10) Joint report - Both
