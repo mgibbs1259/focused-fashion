@@ -51,8 +51,8 @@ TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_train"
 train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
-VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
-VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
+VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/val_ann.csv"
+VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_validation"
 val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, BATCH_SIZE)
 
 
@@ -91,3 +91,6 @@ for epoch in range(N_EPOCHS):
         #     print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
         #         epoch, train_idx * len(train_input), len(train_data_loader.dataset),
         #                100. * train_idx / len(train_data_loader), loss.item()))
+
+#saves model
+#torch.save(model.state_dict(), 'baseline_model.pkl')
