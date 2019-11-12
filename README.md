@@ -29,10 +29,11 @@ https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
 2) Script to check images vs json - Jessica
 3) Add script to save model - Jessica
 4) Hooking up train and validations then test - Mary 
-5) Excel sheet for tracking hyperparameters/models - Jessica
-5) Model architecture/tuning - Both
-6) Pre-trained models/ensembling - Both
-7) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
-8) Web App - Mary 
-9) Presentation - Both
-10) Joint report - Both
+5) ASK ABOUT HOW TO Address class imbalance + add F1, research THIS - Mary 
+6) Excel sheet for tracking hyperparameters/models - Jessica
+7) Model architecture/tuning - Both
+8) Pre-trained models/ensembling - Both
+9) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
+10) Web App - Mary 
+11) Presentation - Both
+12) Joint report - Both
