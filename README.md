@@ -26,8 +26,8 @@ https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
 
 ## TO DO
 1) Data loader bar - Mary
-2) Script to check images vs json - Jessica
-3) Add script to save model - Jessica
+2) Script to check images vs json - Jessica DONE
+3) Add script to save model - Jessica DONE
 4) Hooking up train and validations then test, add micro-average F1 - Mary 
 5) ASK ABOUT HOW TO address class imbalance, research THIS - Mary 
 6) Excel sheet for tracking hyperparameters/models - Jessica
