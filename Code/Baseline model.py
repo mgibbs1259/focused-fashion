@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 import torch.optim as optim
+import tqdm
 
 from Data import load_images
 
@@ -45,9 +46,9 @@ class CNN(nn.Module):
         return torch.sigmoid(x)
 
 
-# TEST_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test_ann.csv"
-# TEST_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_test"
-# test_data_loader = load_images.create_data_loader(TEST_DATA_PATH, TEST_IMG_DIR, BATCH_SIZE)
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_ann.csv"
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_train"
+train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
 VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
@@ -60,20 +61,33 @@ optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 criterion = nn.BCELoss()
 
 
-def train_model(epoch):
-    for idx, (data, target) in enumerate(val_data_loader):
-        model_input, target = data.to(device), target.to(device)
-        optimizer.zero_grad()
-        model_output = model(model_input)
-        loss = criterion(model_output, target.float())
-        loss.backward()
-        optimizer.step()
-
-        if idx % 10 == 0:
-            print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                epoch, idx * len(model_input), len(val_data_loader.dataset),
-                       100. * idx / len(val_data_loader), loss.item()))
-
-
+epoch_status = tqdm.tqdm(total=N_EPOCHS, desc='Epoch', position=0)
 for epoch in range(N_EPOCHS):
-    train_model(epoch)
+    # Training
+    model.train()
+    loss_train = 0
+    for train_idx, (features, target) in enumerate(train_data_loader):
+        train_input, train_target = features.to(device), target.to(device)
+        optimizer.zero_grad()
+        train_output = model(train_input)
+        train_loss = criterion(train_output, train_target)
+        train_loss.backward()
+        optimizer.step()
+        loss_train += train_loss.item()
+    # Validation
+    model.eval()
+    loss_val = 0
+    with torch.no_grad():
+        for val_idx, (feat, tar) in enumerate(val_data_loader):
+            val_input, val_target = feat.to(device), tar.to(device)
+            val_output = model(val_input)
+            val_loss = criterion(val_output, val_target)
+            loss_val += val_loss.item()
+    # Update status
+    epoch_status.update(1)
+
+        # # Load bar
+        # if train_idx % 10 == 0:
+        #     print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+        #         epoch, train_idx * len(train_input), len(train_data_loader.dataset),
+        #                100. * train_idx / len(train_data_loader), loss.item()))
