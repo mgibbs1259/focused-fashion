@@ -50,8 +50,8 @@ class CNN(nn.Module):
 # test_data_loader = load_images.create_data_loader(TEST_DATA_PATH, TEST_IMG_DIR, BATCH_SIZE)
 
 
-VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
-VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
+VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/val_ann.csv"
+VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_validation"
 val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, BATCH_SIZE)
 
 
@@ -79,5 +79,4 @@ for epoch in range(N_EPOCHS):
     train_model(epoch)
 
 #saves model
-
-torch.save(net.state_dict(), 'baseline_model.pkl')
+#torch.save(net.state_dict(), 'baseline_model.pkl')
