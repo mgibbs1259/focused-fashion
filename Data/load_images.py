@@ -64,5 +64,5 @@ def create_data_loader(data_path, img_dir, batch_size):
      img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BILINEAR),
                                          transforms.ToTensor()])
      dataset = FashionDataset(data_path, img_dir, img_transform)
-     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=0, pin_memory=True)
+     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=30, pin_memory=True)
      return loader
