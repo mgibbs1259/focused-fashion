@@ -28,7 +28,7 @@ https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
 1) Data loader bar - Mary
 2) Script to check images vs json - Jessica
 3) Add script to save model - Jessica
-4) Hooking up train and test - Mary 
+4) Hooking up train and validations then test - Mary 
 5) Excel sheet for tracking hyperparameters/models - Jessica
 5) Model architecture/tuning - Both
 6) Pre-trained models/ensembling - Both
