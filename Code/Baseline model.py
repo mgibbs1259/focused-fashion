@@ -3,7 +3,7 @@ import torch
 import torch.optim as optim
 import tqdm
 from torch import nn
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import f1_score
 
 from Data import load_images
 
