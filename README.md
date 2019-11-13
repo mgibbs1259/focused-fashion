@@ -25,15 +25,10 @@ https://github.com/utkuozbulak/pytorch-custom-dataset-examples
 https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
 
 ## TO DO
-1) Data loader bar - Mary
-2) Script to check images vs json - Jessica DONE
-3) Add script to save model - Jessica DONE
-4) Hooking up train and validations then test, add micro-average F1 - Mary 
-5) ASK ABOUT HOW TO address class imbalance, research THIS - Mary 
-6) Excel sheet for tracking hyperparameters/models - Jessica DONE
-7) Model architecture/tuning - Both
-8) Pre-trained models/ensembling - Both
-9) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
-10) Web App - Mary 
-11) Presentation - Both
-12) Joint report - Both
+1) Problem with class imbalance between train, test, and val - Both
+2) Model architecture/tuning - Both
+3) Pre-trained models/ensembling - Both
+4) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
+5) Web App - Mary 
+6) Presentation - Both
+7) Joint report - Both
