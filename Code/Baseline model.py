@@ -1,8 +1,11 @@
+import os
+
 import numpy as np
 import torch
-from torch import nn
 import torch.optim as optim
 import tqdm
+from torch import nn
+from sklearn.metrics import f1_score
 
 from Data import load_images
 
@@ -46,8 +49,8 @@ class CNN(nn.Module):
         return torch.sigmoid(x)
 
 
-TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_ann.csv"
-TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_train"
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test_ann.csv"
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_test"
 train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
@@ -83,14 +86,10 @@ for epoch in range(N_EPOCHS):
             val_output = model(val_input)
             val_loss = criterion(val_output, val_target)
             loss_val += val_loss.item()
+            f1 = f1_score(tar, val_output, average='micro')
+            print("F1 Score: {}".format(f1))
     # Update status
     epoch_status.update(1)
 
-        # # Load bar
-        # if train_idx % 10 == 0:
-        #     print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-        #         epoch, train_idx * len(train_input), len(train_data_loader.dataset),
-        #                100. * train_idx / len(train_data_loader), loss.item()))
-
-#saves model
+# Save model
 #torch.save(model.state_dict(), 'baseline_model.pkl')
