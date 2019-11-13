@@ -3,7 +3,7 @@ import torch
 import torch.optim as optim
 import tqdm
 from torch import nn
-from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score, f1_score
 
 from Data import load_images
 
@@ -84,8 +84,8 @@ for epoch in range(N_EPOCHS):
         for val_idx, (feat, tar) in enumerate(val_data_loader):
             val_input, val_target = feat.to(device), tar.to(device)
             val_output = model(val_input)
-            cpu_tar = tar.to("cpu")
-            cpu_val_output = np.where(val_output.to("cpu") > 0.5, 1, 0)
+            cpu_tar = tar.cpu().numpy()
+            cpu_val_output = np.where(val_output.cpu().numpy() > 0.5, 1, 0)
             f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
             print('F1 Score: {}'.format(f1))
     # Update epoch status
