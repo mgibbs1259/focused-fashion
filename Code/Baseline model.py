@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import torch
 import torch.optim as optim
@@ -49,23 +47,25 @@ class CNN(nn.Module):
         return torch.sigmoid(x)
 
 
-TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test_ann.csv"
-TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_test"
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
-VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/val_ann.csv"
-VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_validation"
-val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, BATCH_SIZE)
+VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
+VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
+val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=500)
 
 
 model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 criterion = nn.BCELoss()
 
-
+# Define epoch status
 epoch_status = tqdm.tqdm(total=N_EPOCHS, desc='Epoch', position=0)
 for epoch in range(N_EPOCHS):
+    # Update epoch status
+    epoch_status.set_description('Epoch: {}'.format(epoch))
     # Training
     model.train()
     loss_train = 0
@@ -77,18 +77,18 @@ for epoch in range(N_EPOCHS):
         train_loss.backward()
         optimizer.step()
         loss_train += train_loss.item()
+        print('Train Loss: {}'.format(train_loss))
     # Validation
     model.eval()
-    loss_val = 0
     with torch.no_grad():
         for val_idx, (feat, tar) in enumerate(val_data_loader):
             val_input, val_target = feat.to(device), tar.to(device)
             val_output = model(val_input)
-            val_loss = criterion(val_output, val_target)
-            loss_val += val_loss.item()
-            f1 = f1_score(tar, val_output, average='micro')
-            print("F1 Score: {}".format(f1))
-    # Update status
+            cpu_tar = tar.to("cpu")
+            cpu_val_output = np.where(val_output.to("cpu") > 0.5, 1, 0)
+            f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
+            print('F1 Score: {}'.format(f1))
+    # Update epoch status
     epoch_status.update(1)
 
 # Save model
