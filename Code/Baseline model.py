@@ -61,6 +61,7 @@ model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
 criterion = nn.BCELoss()
 
+
 # Define epoch status
 epoch_status = tqdm.tqdm(total=N_EPOCHS, desc='Epoch', position=0)
 for epoch in range(N_EPOCHS):
@@ -90,6 +91,7 @@ for epoch in range(N_EPOCHS):
             print('F1 Score: {}'.format(f1))
     # Update epoch status
     epoch_status.update(1)
+
 
 # Save model
 #torch.save(model.state_dict(), 'baseline_model.pkl')
