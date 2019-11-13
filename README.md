@@ -24,6 +24,9 @@ https://www.analyticsvidhya.com/blog/2019/04/build-first-multi-label-image-class
 https://github.com/utkuozbulak/pytorch-custom-dataset-examples
 https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
 
+https://homes.cs.washington.edu/~bboots/files/GuerinBMVC18.pdf
+https://www.learnopencv.com/pytorch-for-beginners-image-classification-using-pre-trained-models/
+
 ## TO DO
 1) Problem with class imbalance between train, test, and val - Both
 2) Model architecture/tuning - Both
