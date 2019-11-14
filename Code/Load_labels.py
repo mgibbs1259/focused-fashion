@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import json
 import matplotlib.pyplot as plt
-matplotlib.pyplot.ioff()
+
 
 pd.set_option('display.max_rows', 600)
 pd.set_option('display.max_columns', 50)
@@ -34,6 +34,8 @@ train_ann=train['annotations']
 train_ann=pd.DataFrame(train_ann)
 train=pd.merge(train_img_url, train_ann, on='imageId', how='inner')
 
+# train.to_csv("fulltrain_with_label")
+
 test=pd.DataFrame(test['images'])
 
 val_img_url=validation['images']
@@ -45,8 +47,17 @@ validation=pd.merge(val_img_url, val_ann, on='imageId', how='inner')
 #create test with labels
 test2 = train_ann[700000:730000]
 
+
 #only keep first 500000 rows
 train_ann = train_ann[:500000]
+
+drop = pd.read_csv('/home/ubuntu/Final-Project-Group8/Final-Project-Group8/drop_2.csv')
+
+drop = drop['imageId'].tolist()
+
+train_ann['imageId'] = train_ann['imageId'].astype(int)
+
+train_ann = train_ann[~train_ann['imageId'].isin(drop)]
 
 
 datas = {'Train': train, 'Test': test, 'Validation': validation}
@@ -54,7 +65,7 @@ for data in datas.values():
     data['imageId'] = data['imageId'].astype(np.uint32)
 
 #write out val_ann and train_ann as csv
-# train_ann.to_csv("train_ann.csv")
+#train_ann.to_csv("train_ann_NEW.csv")
 # val_ann.to_csv("val_ann.csv")
 # test2.to_csv("test.csv")
 

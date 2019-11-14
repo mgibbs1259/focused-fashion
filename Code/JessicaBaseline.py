@@ -16,8 +16,8 @@ torch.backends.cudnn.benchmark = False
 
 
 LR = 5e-2
-N_EPOCHS = 5
-BATCH_SIZE = 256
+N_EPOCHS = 1
+BATCH_SIZE = 500
 DROPOUT = 0.5
 
 
@@ -47,13 +47,13 @@ class CNN(nn.Module):
         return torch.sigmoid(x)
 
 
-DATA_PATH_TRAIN = "/home/ubuntu/Final-Project-Group8/train_ann.csv"
-IMG_DIR_TRAIN = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_train"
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/train_ann.csv"
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_train"
 train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
-DATA_PATH_VAL = "/home/ubuntu/Final-Project-Group8/val_ann.csv"
-IMG_DIR_VAL = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_validation"
+VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/val_ann.csv"
+VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_validation"
 val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=1000)
 
 
@@ -94,4 +94,10 @@ for epoch in range(N_EPOCHS):
 
 
 # Save model
-torch.save(model.state_dict(), 'baseline_model.pkl')
+# torch.save(model.state_dict(), '/home/ubuntu/Final-Project-Group8/baseline_model.pkl')
+# model = torch.load('/home/ubuntu/Final-Project-Group8/baseline_model.pkl')
+
+# https://stackoverflow.com/questions/42703500/best-way-to-save-a-trained-model-in-pytorch
+
+import os
+os.getcwd()
