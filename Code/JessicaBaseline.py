@@ -22,7 +22,7 @@ MODEL_NAME = "model_number_1"
 
 
 LR = 5e-2
-N_EPOCHS = 5
+N_EPOCHS = 2
 BATCH_SIZE = 256
 DROPOUT = 0.5
 
@@ -55,7 +55,8 @@ class CNN(nn.Module):
         x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
         x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
         x = self.linear2(x)
-        return torch.sigmoid(x)
+        return x
+            #return this in the exam torch.sigmoid(x)
 
 
 TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/train_ann.csv"
