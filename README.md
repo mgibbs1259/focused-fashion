@@ -31,9 +31,11 @@ REMOVED FROM TRAIN UNCOMMON LABELS 161, 162, and 46
 This includes images: 
 
 ## TO DO
-1) Problem with class imbalance between train, test, and val - Both
+1) Test set
 2) Model architecture/tuning - Both
-3) Pre-trained models/ensembling - Both
+3) Pre-trained models - Both
+  a) ResNet50 - Mary
+  b) VGG-19, Densenet-121 (if time) - Jessica 
 4) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
 5) Web App - Mary 
 6) Presentation - Both
