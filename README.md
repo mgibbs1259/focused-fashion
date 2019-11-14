@@ -27,6 +27,9 @@ https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
 https://homes.cs.washington.edu/~bboots/files/GuerinBMVC18.pdf
 https://www.learnopencv.com/pytorch-for-beginners-image-classification-using-pre-trained-models/
 
+REMOVED FROM TRAIN UNCOMMON LABELS 161, 162, and 46
+This includes images: 
+
 ## TO DO
 1) Problem with class imbalance between train, test, and val - Both
 2) Model architecture/tuning - Both
