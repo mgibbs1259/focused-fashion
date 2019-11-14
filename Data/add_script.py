@@ -43,7 +43,7 @@ ids_to_add_back = [4025, 4761, 5209, 5397, 6980, 7421, 10370, 15035, 16593, 1704
 
 
 data_dir = "/home/ubuntu/Final-Project-Group8/Data/" # Look at this and ensure it's path to train.json
-_outdir = "/home/ubuntu/Final-Project-Group8/Data/add_back" # Change this to train img dir
+_outdir = "/home/ubuntu/Final-Project-Group8/Data/output_train" # Change this to train img dir
 
 
 with open(os.path.join(data_dir, 'train.json')) as f:
