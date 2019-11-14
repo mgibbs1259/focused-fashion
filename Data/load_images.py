@@ -42,7 +42,7 @@ class FashionDataset(Dataset):
         self.data_csv_path = data_csv_path
         self.img_dir_path = img_dir_path
         self.img_transform = img_transform
-        self.df = pd.read_csv(self.data_csv_path, header=0, names=['label_id', 'image_id'])
+        self.df = pd.read_csv(self.data_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
         self.x_train = self.df['image_id']
         self.mlb = MultiLabelBinarizer()
         self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
@@ -64,5 +64,5 @@ def create_data_loader(data_path, img_dir, batch_size):
      img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BILINEAR),
                                          transforms.ToTensor()])
      dataset = FashionDataset(data_path, img_dir, img_transform)
-     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=30, pin_memory=True)
+     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=20, pin_memory=True)
      return loader
