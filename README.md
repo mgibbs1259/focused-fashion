@@ -35,7 +35,7 @@ This includes images:
 2) Model architecture/tuning - Both
 3) Pre-trained models - Both
   a) ResNet50 - Mary
-  b) Jessica will pick one
+  b) VGG-19, Densenet-121 (if time) - Jessica 
 4) KNN - Jessica (check out arxiv paper) with Mary helping pipeline from saved model
 5) Web App - Mary 
 6) Presentation - Both
