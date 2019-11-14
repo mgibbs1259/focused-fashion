@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-#this script corss references the labels in the csv files with the images in the directories.
+#this script cross references the labels in the csv files with the images in the directories.
 #if value counts returns false that means there are missing images from the csv files.
 DATA_PATH_VAL = "/home/ubuntu/Final-Project-Group8/val_ann.csv"
 IMG_DIR_VAL = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_validation"
