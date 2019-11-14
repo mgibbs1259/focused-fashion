@@ -59,7 +59,7 @@ class CNN(nn.Module):
 
 
 TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
-TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_val"
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
