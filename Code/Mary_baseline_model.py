@@ -1,13 +1,72 @@
 import os
 
 import numpy as np
+import pandas as pd
 import torch
 import torch.optim as optim
 import tqdm
+from PIL import Image
+from ast import literal_eval
+from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader
+from sklearn.preprocessing import MultiLabelBinarizer
 from torch import nn
 from sklearn.metrics import f1_score
 
-from Data import load_images
+
+def obtain_smallest_image_size(img_dir):
+    """Returns the dimensions of the smallest image in terms of area."""
+    image_sizes = {}
+    for image in os.listdir(img_dir):
+        print(image)
+        try:
+            with Image.open(os.path.join(img_dir, image)) as img:
+                width, height = img.size
+                image_sizes[image] = (width, height, width * height)
+                print(image_sizes[image])
+        except:
+            with open('bad_images.txt', 'a') as file:
+                file.write(image)
+    smallest_image = min(image_sizes, key=lambda k: image_sizes[k][2])
+    return image_sizes[smallest_image]
+
+
+class FashionDataset(Dataset):
+    """A dataset for the fashion images and fashion image labels.
+
+    Arguments:
+        Data csv path
+        Image directory path
+        Image transformation
+    """
+    def __init__(self, data_csv_path, img_dir_path, img_transform):
+        self.data_csv_path = data_csv_path
+        self.img_dir_path = img_dir_path
+        self.img_transform = img_transform
+        self.df = pd.read_csv(self.data_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
+        self.x_train = self.df['image_id']
+        self.mlb = MultiLabelBinarizer()
+        self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
+
+    def __getitem__(self, index):
+        img = Image.open(os.path.join(self.img_dir_path, str(self.x_train[index]) + '.jpg'))
+        img = img.convert('RGB')
+        if self.img_transform is not None:
+            img = self.img_transform(img)
+        img_label = torch.from_numpy(self.y_train[index])
+        return img, img_label.float()
+
+    def __len__(self):
+        return self.x_train.shape[0]
+
+
+def create_data_loader(data_path, img_dir, batch_size):
+     """Returns an image loader for the model."""
+     img_transform = transforms.Compose([transforms.Resize((100, 100), interpolation=Image.BICUBIC),
+                                         transforms.ToTensor()])
+     dataset = FashionDataset(data_path, img_dir, img_transform)
+     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+     return loader
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -21,9 +80,9 @@ torch.backends.cudnn.benchmark = False
 MODEL_NAME = "model_number_1"
 
 
-LR = 5e-2
-N_EPOCHS = 5
-BATCH_SIZE = 256
+LR = 0.01
+N_EPOCHS = 15
+BATCH_SIZE = 1024
 DROPOUT = 0.5
 
 
@@ -35,41 +94,41 @@ with open("{}.txt".format(MODEL_NAME), "w") as file:
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (3, 3), stride=1, padding=1) # Output (n_examples, 32, 32, 32)
+        self.conv1 = nn.Conv2d(3, 32, (12, 12), stride=2, padding=1) # Output (n_examples, 32, 46, 46)
         self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2) # Output (n_examples, 32, 16, 16)
+        self.pool1 = nn.MaxPool2d((2, 2), stride=2) # Output (n_examples, 32, 23, 23)
 
-        self.conv2 = nn.Conv2d(32, 64, (3, 3), stride=1, padding=1) # Output (n_examples, 64, 16, 16)
+        self.conv2 = nn.Conv2d(32, 64, (6, 6), stride=2, padding=1) # Output (n_examples, 64, 10, 10)
         self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 8, 8)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 5, 5)
 
-        self.linear1 = nn.Linear(64*8*8, 256) # Input will be flattened to (n_examples, 64, 8, 8)
-        self.linear1_bn = nn.BatchNorm1d(256)
+        self.linear1 = nn.Linear(64*5*5, BATCH_SIZE) # Input will be flattened to (n_examples, 64, 5, 5)
+        self.linear1_bn = nn.BatchNorm1d(BATCH_SIZE)
         self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(256, 225)
+        self.linear2 = nn.Linear(BATCH_SIZE, 225)
 
-        self.act = torch.relu
+        self.relu = torch.relu
 
     def forward(self, x):
-        x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
-        x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
-        x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
+        x = self.pool1(self.convnorm1(self.relu(self.conv1(x))))
+        x = self.pool2(self.convnorm2(self.relu(self.conv2(x))))
+        x = self.drop(self.linear1_bn(self.relu(self.linear1(x.view(len(x), -1)))))
         x = self.linear2(x)
         return x
 
 
-TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
-TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
-train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_ann.csv"
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_train"
+train_data_loader = create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
 VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
-val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
+val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
 
 
 model = CNN().to(device)
-optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
+optimizer = optim.Adam(model.parameters(), lr=LR)
 criterion = nn.BCEWithLogitsLoss()
 
 
