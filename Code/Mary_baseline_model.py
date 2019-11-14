@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import torch
 import torch.optim as optim
@@ -15,10 +17,19 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
+# Change this
+MODEL_NAME = "model_number_1"
+
+
 LR = 5e-2
 N_EPOCHS = 5
 BATCH_SIZE = 256
 DROPOUT = 0.5
+
+
+with open("{}.txt".format(MODEL_NAME), "a") as file:
+    file.write("MODEL_NAME: {}, LR: {}, N_EPOCHS: {}, BATCH_SIZE: {}, DROPOUT: {} \n".format(MODEL_NAME, LR, N_EPOCHS,
+                                                                                             BATCH_SIZE, DROPOUT))
 
 
 class CNN(nn.Module):
@@ -47,14 +58,14 @@ class CNN(nn.Module):
         return torch.sigmoid(x)
 
 
-TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_ann.csv"
-TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_train"
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_val"
 train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
 VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
-val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=1000)
+val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
 
 
 model = CNN().to(device)
@@ -65,6 +76,9 @@ criterion = nn.BCEWithLogitsLoss()
 # Define epoch status
 epoch_status = tqdm.tqdm(total=N_EPOCHS, desc='Epoch', position=0)
 for epoch in range(N_EPOCHS):
+    # Write to file
+    with open("{}.txt".format(MODEL_NAME), "a") as file:
+        file.write("EPOCH: {} \n".format(epoch))
     # Update epoch status
     epoch_status.set_description('Epoch: {}'.format(epoch))
     # Training
@@ -78,6 +92,10 @@ for epoch in range(N_EPOCHS):
         train_loss.backward()
         optimizer.step()
         loss_train += train_loss.item()
+        # Write to file
+        with open("{}.txt".format(MODEL_NAME), "a") as file:
+            file.write('Train Index: {}, Train Loss: {} \n'.format(train_idx, train_loss))
+        # Print status
         print('Train Index: {}, Train Loss: {}'.format(train_idx, train_loss))
     # Validation
     model.eval()
@@ -88,10 +106,14 @@ for epoch in range(N_EPOCHS):
             cpu_tar = tar.cpu().numpy()
             cpu_val_output = np.where(val_output.cpu().numpy() > 0.5, 1, 0)
             f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
-            print('F1 Score: {}'.format(f1))
+            # Write to file
+            with open("{}.txt".format(MODEL_NAME), "a") as file:
+                file.write('Validation F1 Score: {} \n'.format(f1))
+            # Print status
+            print('Validation F1 Score: {}'.format(f1))
     # Update epoch status
     epoch_status.update(1)
 
 
 # Save model
-#torch.save(model.state_dict(), 'baseline_model.pkl')
+torch.save(model.state_dict(), 'baseline_model.pt')
