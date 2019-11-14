@@ -59,7 +59,7 @@ val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, bat
 
 model = CNN().to(device)
 optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.5)
-criterion = nn.BCELoss()
+criterion = nn.BCEWithLogitsLoss()
 
 
 # Define epoch status
