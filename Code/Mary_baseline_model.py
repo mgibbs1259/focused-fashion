@@ -35,7 +35,7 @@ class CNN(nn.Module):
         self.linear1 = nn.Linear(64*8*8, 256) # Input will be flattened to (n_examples, 64, 8, 8)
         self.linear1_bn = nn.BatchNorm1d(256)
         self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(256, 225)
+        self.linear2 = nn.Linear(256, 224)
 
         self.act = torch.relu
 
@@ -47,8 +47,8 @@ class CNN(nn.Module):
         return torch.sigmoid(x)
 
 
-TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test_ann.csv"
-TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_test"
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_ann.csv"
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_train"
 train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
@@ -78,7 +78,7 @@ for epoch in range(N_EPOCHS):
         train_loss.backward()
         optimizer.step()
         loss_train += train_loss.item()
-        print('Train Loss: {}'.format(train_loss))
+        print('Train Index: {}, Train Loss: {}'.format(train_idx, train_loss))
     # Validation
     model.eval()
     with torch.no_grad():
