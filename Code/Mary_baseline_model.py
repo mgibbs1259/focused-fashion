@@ -46,7 +46,7 @@ class CNN(nn.Module):
         self.linear1 = nn.Linear(64*8*8, 256) # Input will be flattened to (n_examples, 64, 8, 8)
         self.linear1_bn = nn.BatchNorm1d(256)
         self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(256, 224)
+        self.linear2 = nn.Linear(256, 225)
 
         self.act = torch.relu
 
