@@ -27,7 +27,7 @@ BATCH_SIZE = 256
 DROPOUT = 0.5
 
 
-with open("{}.txt".format(MODEL_NAME), "a") as file:
+with open("{}.txt".format(MODEL_NAME), "w") as file:
     file.write("MODEL_NAME: {}, LR: {}, N_EPOCHS: {}, BATCH_SIZE: {}, DROPOUT: {} \n".format(MODEL_NAME, LR, N_EPOCHS,
                                                                                              BATCH_SIZE, DROPOUT))
 
@@ -94,9 +94,9 @@ for epoch in range(N_EPOCHS):
         loss_train += train_loss.item()
         # Write to file
         with open("{}.txt".format(MODEL_NAME), "a") as file:
-            file.write('Train Index: {}, Train Loss: {} \n'.format(train_idx, train_loss))
+            file.write('Batch Number: {}, Train Loss: {} \n'.format(train_idx, train_loss))
         # Print status
-        print('Train Index: {}, Train Loss: {}'.format(train_idx, train_loss))
+        print('Batch Number: {}, Train Loss: {}'.format(train_idx, train_loss))
     # Validation
     model.eval()
     with torch.no_grad():
