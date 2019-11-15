@@ -63,10 +63,10 @@ torch.backends.cudnn.benchmark = False
 MODEL_NAME = "model_number_1"
 
 
-LR = 0.1
-N_EPOCHS = 5
+LR = 0.01
+N_EPOCHS = 15
 BATCH_SIZE = 1024
-DROPOUT = 0.45
+DROPOUT = 0.5
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
@@ -88,7 +88,7 @@ class CNN(nn.Module):
         self.linear1 = nn.Linear(64*5*5, BATCH_SIZE) # Input will be flattened to (n_examples, 64, 5, 5)
         self.linear1_bn = nn.BatchNorm1d(BATCH_SIZE)
         self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(BATCH_SIZE, 149)
+        self.linear2 = nn.Linear(BATCH_SIZE, 225)
 
         self.relu = torch.relu
 
