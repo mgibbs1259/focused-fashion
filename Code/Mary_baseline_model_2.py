@@ -60,7 +60,7 @@ torch.backends.cudnn.benchmark = False
 
 
 # Change this
-MODEL_NAME = "model_number_1"
+MODEL_NAME = "model_number_2"
 
 
 LR = 0.01
