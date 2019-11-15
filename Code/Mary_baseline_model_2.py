@@ -45,7 +45,7 @@ class FashionDataset(Dataset):
 
 def create_data_loader(data_path, img_dir, batch_size):
      """Returns an image loader for the model."""
-     img_transform = transforms.Compose([transforms.Resize((100, 100), interpolation=Image.BICUBIC),
+     img_transform = transforms.Compose([transforms.Resize((120, 120), interpolation=Image.BICUBIC),
                                          transforms.ToTensor()])
      dataset = FashionDataset(data_path, img_dir, img_transform)
      loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
@@ -63,10 +63,10 @@ torch.backends.cudnn.benchmark = False
 MODEL_NAME = "model_number_1"
 
 
-LR = 0.1
-N_EPOCHS = 5
+LR = 0.01
+N_EPOCHS = 10
 BATCH_SIZE = 1024
-DROPOUT = 0.45
+DROPOUT = 0.50
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
@@ -77,15 +77,19 @@ with open("{}.txt".format(MODEL_NAME), "w") as file:
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (12, 12), stride=2, padding=1) # Output (n_examples, 32, 46, 46)
+        self.conv1 = nn.Conv2d(3, 32, (12, 12), stride=2, padding=1)
         self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2) # Output (n_examples, 32, 23, 23)
+        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
 
-        self.conv2 = nn.Conv2d(32, 64, (6, 6), stride=2, padding=1) # Output (n_examples, 64, 10, 10)
+        self.conv2 = nn.Conv2d(32, 64, (8, 8), stride=2, padding=1)
         self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 5, 5)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
 
-        self.linear1 = nn.Linear(64*5*5, BATCH_SIZE) # Input will be flattened to (n_examples, 64, 5, 5)
+        self.conv3 = nn.Conv2d(64, 128, (4, 4), stride=2, padding=1)
+        self.convnorm3 = nn.BatchNorm2d(128)
+        self.pool3 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+
+        self.linear1 = nn.Linear(128*1*1, BATCH_SIZE)
         self.linear1_bn = nn.BatchNorm1d(BATCH_SIZE)
         self.drop = nn.Dropout(DROPOUT)
         self.linear2 = nn.Linear(BATCH_SIZE, 149)
@@ -95,6 +99,7 @@ class CNN(nn.Module):
     def forward(self, x):
         x = self.pool1(self.convnorm1(self.relu(self.conv1(x))))
         x = self.pool2(self.convnorm2(self.relu(self.conv2(x))))
+        x = self.pool3(self.convnorm3(self.relu(self.conv3(x))))
         x = self.drop(self.linear1_bn(self.relu(self.linear1(x.view(len(x), -1)))))
         x = self.linear2(x)
         return x
