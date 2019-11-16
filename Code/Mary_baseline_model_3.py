@@ -46,6 +46,10 @@ class FashionDataset(Dataset):
 def create_data_loader(data_path, img_dir, batch_size):
      """Returns an image loader for the model."""
      img_transform = transforms.Compose([transforms.Resize(224),
+                                         transforms.RandomRotation(degrees=15),
+                                         transforms.RandomHorizontalFlip(),
+                                         transforms.RandomVerticalFlip(),
+                                         transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
                                          transforms.CenterCrop(224),
                                          transforms.ToTensor(),
                                          transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
