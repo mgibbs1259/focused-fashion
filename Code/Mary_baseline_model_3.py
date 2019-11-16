@@ -7,11 +7,11 @@ import torch.optim as optim
 import tqdm
 from PIL import Image
 from ast import literal_eval
-from torchvision import transforms
+from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
 from torch import nn
-from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score, f1_score
 
 
 class FashionDataset(Dataset):
@@ -45,8 +45,10 @@ class FashionDataset(Dataset):
 
 def create_data_loader(data_path, img_dir, batch_size):
      """Returns an image loader for the model."""
-     img_transform = transforms.Compose([transforms.Resize((100, 100), interpolation=Image.BICUBIC),
-                                         transforms.ToTensor()])
+     img_transform = transforms.Compose([transforms.Resize(256),
+                                         transforms.CenterCrop(224),
+                                         transforms.ToTensor(),
+                                         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
      dataset = FashionDataset(data_path, img_dir, img_transform)
      loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
      return loader
@@ -63,9 +65,9 @@ torch.backends.cudnn.benchmark = False
 MODEL_NAME = "model_number_3"
 
 
-LR = 0.001
-N_EPOCHS = 7
-BATCH_SIZE = 512
+LR = 0.01
+N_EPOCHS = 5
+BATCH_SIZE = 32
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
@@ -73,39 +75,22 @@ with open("{}.txt".format(MODEL_NAME), "w") as file:
                                                                                 BATCH_SIZE))
 
 
-class CNN(nn.Module):
+class DenseModel(nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 16, (3, 3), stride=1, padding=1)
-        self.convnorm1 = nn.BatchNorm2d(16)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
+        super(DenseModel, self).__init__()
+        self.dense_model = models.densenet161(pretrained=True)
+        for param in self.parameters():
+            param.requires_grad = False
+        self.features = nn.Sequential(*list(self.dense_model.children())[:-1])
 
-        self.conv2 = nn.Conv2d(16, 32, (3, 3), stride=1, padding=1)
-        self.convnorm2 = nn.BatchNorm2d(32)
-        self.pool2 = nn.MaxPool2d((2, 2), stride=2)
-
-        self.conv3 = nn.Conv2d(32, 64, (3, 3), stride=1, padding=1)
-        self.convnorm3 = nn.BatchNorm2d(64)
-        self.pool3 = nn.MaxPool2d((2, 2), stride=2)
-
-        self.conv4 = nn.Conv2d(64, 128, (3, 3), stride=1, padding=1)
-        self.convnorm4 = nn.BatchNorm2d(128)
-        self.pool4 = nn.MaxPool2d((2, 2), stride=2)
-
-        self.linear = nn.Linear(4608, 149)
-
-        self.relu = torch.relu
+        self.linear1 = nn.Linear(108192, 1024)
+        self.linear1_bn = nn.BatchNorm1d(1024)
+        self.linear2 = nn.Linear(1024, 149)
 
     def forward(self, x):
-        x = self.convnorm1(self.relu(self.conv1(x)))
-        x = self.pool1(x)
-        x = self.convnorm2(self.relu(self.conv2(x)))
-        x = self.pool2(x)
-        x = self.convnorm3(self.relu(self.conv3(x)))
-        x = self.pool3(x)
-        x = self.convnorm4(self.relu(self.conv4(x)))
-        x = self.pool4(x)
-        x = self.linear(x.view(len(x), -1))
+        x = self.features(x)
+        x = self.linear1_bn(self.linear1(x.view(len(x), -1)))
+        x = self.linear2(x)
         return x
 
 
@@ -119,8 +104,8 @@ VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
 
 
-model = CNN().to(device)
-optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9)
+model = DenseModel().to(device)
+optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.95)
 criterion = nn.BCEWithLogitsLoss()
 
 
@@ -156,12 +141,13 @@ for epoch in range(N_EPOCHS):
             val_output = model(val_input)
             cpu_tar = tar.cpu().numpy()
             cpu_val_output = np.where(val_output.cpu().numpy() > 0.5, 1, 0)
+            accuracy = accuracy_score(cpu_tar, cpu_val_output)
             f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
             # Write to file
             with open("{}.txt".format(MODEL_NAME), "a") as file:
-                file.write('Validation F1 Score: {} \n'.format(f1))
+                file.write('Validation Accuracy Score: {}, Validation F1 Score: {} \n'.format(accuracy, f1))
             # Print status
-            print('Validation F1 Score: {}'.format(f1))
+            print('Validation Accuracy Score: {}, Validation F1 Score: {}'.format(accuracy, f1))
     # Update epoch status
     epoch_status.update(1)
 
