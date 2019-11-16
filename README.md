@@ -27,6 +27,9 @@ https://www.kaggle.com/mratsim/starting-kit-for-pytorch-deep-learning
 https://homes.cs.washington.edu/~bboots/files/GuerinBMVC18.pdf
 https://www.learnopencv.com/pytorch-for-beginners-image-classification-using-pre-trained-models/
 
+https://www.kaggle.com/renatobmlr/pytorch-densenet-as-feature-extractor
+https://towardsdatascience.com/simple-implementation-of-densely-connected-convolutional-networks-in-pytorch-3846978f2f36
+
 REMOVED FROM TRAIN UNCOMMON LABELS 161, 162, and 46
 This includes images: 
 
