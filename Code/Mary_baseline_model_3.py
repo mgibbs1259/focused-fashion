@@ -82,7 +82,7 @@ class CNN(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, (5, 5), stride=1, padding=1) # Output (96, 96)
         self.convnorm2 = nn.BatchNorm2d(64)
 
-        self.pool1 = nn.AvgPool2d(kernel_size=(2, 2), stride=2)
+        self.pool = nn.AvgPool2d(kernel_size=(2, 2), stride=2)
 
         self.linear = nn.Linear(64*48*48, 149)
 
