@@ -87,14 +87,14 @@ class DenseModel(nn.Module):
             param.requires_grad = False
         self.features = nn.Sequential(*list(self.dense_model.children())[:-1])
 
-        self.relu = nn.ReLU(108192, 1024)
-        self.relu_bn = nn.BatchNorm1d(1024)
-        self.linear = nn.Linear(1024, 512)
+        self.linear1 = nn.Linear(108192, 1024)
+        self.linear1_bn = nn.BatchNorm1d(1024)
+        self.linear2 = nn.Linear(1024, 149)
 
     def forward(self, x):
         x = self.features(x)
-        x = self.relu_bn(self.relu(x.view(len(x), -1)))
-        x = self.linear(x)
+        x = self.linear1_bn(self.linear1(x.view(len(x), -1)))
+        x = self.linear2(x)
         return x
 
 
