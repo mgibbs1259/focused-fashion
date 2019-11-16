@@ -91,8 +91,6 @@ class CNN(nn.Module):
     def forward(self, x):
         x = self.convnorm1(self.relu(self.conv1(x)))
         x = self.convnorm2(self.relu(self.conv2(x)))
-        x = self.convnorm3(self.relu(self.conv3(x)))
-        x = self.convnorm4(self.relu(self.conv4(x)))
         x = self.pool(x)
         x = self.linear(x.view(len(x), -1))
         return x
