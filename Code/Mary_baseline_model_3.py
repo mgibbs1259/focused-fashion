@@ -11,7 +11,7 @@ from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
 from torch import nn
-from sklearn.metrics import accuracy_score, f1_score
+from sklearn.metrics import f1_score
 
 
 class FashionDataset(Dataset):
@@ -145,13 +145,12 @@ for epoch in range(N_EPOCHS):
             val_output = model(val_input)
             cpu_tar = tar.cpu().numpy()
             cpu_val_output = np.where(val_output.cpu().numpy() > 0.5, 1, 0)
-            accuracy = accuracy_score(cpu_tar, cpu_val_output)
             f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
             # Write to file
             with open("{}.txt".format(MODEL_NAME), "a") as file:
-                file.write('Validation Accuracy Score: {}, Validation F1 Score: {} \n'.format(accuracy, f1))
+                file.write('Validation F1 Score: {} \n'.format(f1))
             # Print status
-            print('Validation Accuracy Score: {}, Validation F1 Score: {}'.format(accuracy, f1))
+            print('Validation F1 Score: {}'.format(f1))
     # Update epoch status
     epoch_status.update(1)
 
