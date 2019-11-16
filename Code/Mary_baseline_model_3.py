@@ -45,7 +45,7 @@ class FashionDataset(Dataset):
 
 def create_data_loader(data_path, img_dir, batch_size):
      """Returns an image loader for the model."""
-     img_transform = transforms.Compose([transforms.Resize(256),
+     img_transform = transforms.Compose([transforms.Resize(224),
                                          transforms.CenterCrop(224),
                                          transforms.ToTensor(),
                                          transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
@@ -66,8 +66,8 @@ MODEL_NAME = "model_number_3"
 
 
 LR = 0.01
-N_EPOCHS = 5
-BATCH_SIZE = 32
+N_EPOCHS = 10
+BATCH_SIZE = 64
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
@@ -78,7 +78,20 @@ with open("{}.txt".format(MODEL_NAME), "w") as file:
 class DenseModel(nn.Module):
     def __init__(self):
         super(DenseModel, self).__init__()
+        self.dense_model = models.densenet161(pretrained=True)
+        for param in self.parameters():
+            param.requires_grad = False
+        self.features = nn.Sequential(*list(self.dense_model.children())[:-1])
 
+        self.relu = nn.ReLU(108192, 1024)
+        self.relu_bn = nn.BatchNorm1d(1024)
+        self.linear = nn.Linear(1024, 512)
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.relu_bn(self.relu(x.view(len(x), -1)))
+        x = self.linear(x)
+        return x
 
 
 TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_ann.csv"
@@ -92,7 +105,7 @@ val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=len(
 
 
 model = DenseModel().to(device)
-optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.95)
+optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9)
 criterion = nn.BCEWithLogitsLoss()
 
 
