@@ -76,19 +76,19 @@ with open("{}.txt".format(MODEL_NAME), "w") as file:
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (5, 5), stride=1, padding=1) # Output (98, 98)
+        self.conv1 = nn.Conv2d(3, 32, (5, 5), stride=1, padding=1)
         self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.AvgPool2d((2, 2), stride=2) # Output (49, 49)
+        self.pool1 = nn.AvgPool2d((2, 2), stride=2)
 
-        self.conv2 = nn.Conv2d(32, 64, (5, 5), stride=1, padding=1) # Output (47, 47)
+        self.conv2 = nn.Conv2d(32, 64, (5, 5), stride=1, padding=1)
         self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.AvgPool2d(kernel_size=(2, 2), stride=2) # Output (23, 23)
+        self.pool2 = nn.AvgPool2d(kernel_size=(2, 2), stride=2)
 
-        self.conv3 = nn.Conv2d(64, 128, (5, 5), stride=1, padding=1) # Output (9, 9)
+        self.conv3 = nn.Conv2d(64, 128, (5, 5), stride=1, padding=1)
         self.convnorm3 = nn.BatchNorm2d(128)
-        self.pool3 = nn.AvgPool2d(kernel_size=(2, 2), stride=2) # Output (4, 4)
+        self.pool3 = nn.AvgPool2d(kernel_size=(2, 2), stride=2)
 
-        self.linear = nn.Linear(128 * 4 * 4, 149)
+        self.linear = nn.Linear(12800, 149)
 
         self.relu = torch.relu
 
