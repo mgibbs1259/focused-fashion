@@ -63,9 +63,9 @@ torch.backends.cudnn.benchmark = False
 MODEL_NAME = "model_number_3"
 
 
-LR = 0.01
+LR = 0.1
 N_EPOCHS = 5
-BATCH_SIZE = 512
+BATCH_SIZE = 1024
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
@@ -82,7 +82,7 @@ class CNN(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, (5, 5), stride=1, padding=1) # Output (96, 96)
         self.convnorm2 = nn.BatchNorm2d(64)
 
-        self.pool = nn.AvgPool2d(kernel_size=(2, 2), stride=2)
+        self.pool = nn.AvgPool2d(kernel_size=(2, 2), stride=2) # Output (48, 48)
 
         self.linear = nn.Linear(64*48*48, 149)
 
