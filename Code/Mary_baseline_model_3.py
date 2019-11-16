@@ -65,7 +65,7 @@ MODEL_NAME = "model_number_3"
 
 LR = 0.01
 N_EPOCHS = 5
-BATCH_SIZE = 1024
+BATCH_SIZE = 512
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
