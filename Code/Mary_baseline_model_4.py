@@ -78,7 +78,20 @@ with open("{}.txt".format(MODEL_NAME), "w") as file:
 class DenseModel(nn.Module):
     def __init__(self):
         super(DenseModel, self).__init__()
+        self.dense_model = models.densenet161(pretrained=True)
+        for param in self.parameters():
+            param.requires_grad = False
+        self.features = nn.Sequential(*list(self.dense_model.children())[:-1])
 
+        self.linear1 = nn.Linear(108192, 1024)
+        self.linear1_bn = nn.BatchNorm1d(1024)
+        self.linear2 = nn.Linear(1024, 149)
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.linear1_bn(self.linear1(x.view(len(x), -1)))
+        x = self.linear2(x)
+        return x
 
 
 TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_ann.csv"
