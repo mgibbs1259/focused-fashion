@@ -8,6 +8,7 @@ import torch.nn as nn
 from PIL import Image
 from annoy import AnnoyIndex
 from sklearn.neighbors import BallTree
+from sklearn.cluster import KMeans
 from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
 
@@ -56,7 +57,7 @@ ex_image_id = [0]
 ex_image_label = ["example_img.jpg"]
 ex_image_dict = {"image_id": ex_image_id, "image_label": ex_image_label}
 ex_image_df = pd.DataFrame(ex_image_dict)
-# ex_image_df.to_csv("example_image.csv")
+ex_image_df.to_csv("example_image.csv")
 
 # Define path to image of interest csv
 EXAMPLE_CSV = "/home/ubuntu/Final-Project-Group8/Code/example_image.csv"
@@ -70,7 +71,7 @@ image_id = [i for i in range(len(os.listdir(STORE_PATH)))]
 image_label = os.listdir(STORE_PATH)
 image_dict = {"image_id": image_id, "image_label": image_label}
 image_df = pd.DataFrame(image_dict)
-# image_df.to_csv("banana_republic_images.csv")
+image_df.to_csv("banana_republic_images.csv")
 
 # Define path to store csv
 STORE_CSV = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images.csv"
@@ -82,6 +83,8 @@ store_loader = create_data_loader(STORE_CSV, STORE_PATH, batch_size=len(os.listd
 
 
 # Load model
+np.random.seed(42)
+torch.manual_seed(42)
 BATCH_SIZE = 1024
 DROPOUT = 0.5
 
@@ -154,15 +157,15 @@ t.save('store.ann')
 
 # Example
 u = AnnoyIndex(annoy_example_feature_maps.size()[1], 'dot')
-u.load('store.ann') # super fast, will just mmap the file
+u.load('store.ann')
 recommendations = u.get_nns_by_item(0, 5)
-print(u.get_nns_by_item(0, 5, include_distances=True)) # will find the 5 nearest neighbors
+print(u.get_nns_by_item(0, 5, include_distances=True))
 for recommendation in recommendations:
     print(image_df['image_label'][recommendation])
 
 # Sklearn KNN
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
-rng = np.random.RandomState(0)
+rng = np.random.RandomState(42)
 tree = BallTree(sk_store_feature_maps)
 dist, ind = tree.query(sk_example_feature_maps, k=5)
 print(ind) # indices of 5 closest neighbors
@@ -170,3 +173,11 @@ print(dist) # distances to 5 closest neighbors
 for i in ind:
     for idx in i:
         print(image_df['image_label'][idx])
+
+# Sklearn KMeans
+kmeans_df = image_df
+kmeans_model = KMeans(n_clusters=10).fit(sk_store_feature_maps)
+kmeans_df['cluster_labels'] = kmeans_model.labels_
+y = kmeans_model.predict(sk_example_feature_maps)
+print("Predicted example label: {}".format(int(y)))
+print(kmeans_df[kmeans_df['cluster_labels'] == int(y)])
