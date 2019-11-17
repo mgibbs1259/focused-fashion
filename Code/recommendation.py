@@ -159,14 +159,14 @@ sklearn_store_feature_maps = sklearn_store_feature_maps.detach().cpu().numpy()
 t = AnnoyIndex(annoy_store_feature_maps.size()[1], 'euclidean')  # Length of item vector that will be indexed
 for i in range(annoy_store_feature_maps.size()[0]):
     t.add_item(i, annoy_store_feature_maps[i])
-t.build(10) # 10 trees, more trees gives higher precision when querying
+t.build(50) # 50 trees, more trees gives higher precision when querying
 t.save('store.ann')
 
 # Example
 u = AnnoyIndex(annoy_example_feature_maps.size()[1], 'euclidean')
 u.load('store.ann') # super fast, will just mmap the file
 recommendations = u.get_nns_by_item(0, 5)
-print(u.get_nns_by_item(0, 5)) # will find the 5 nearest neighbors
+print(u.get_nns_by_item(0, 5, include_distances=True)) # will find the 5 nearest neighbors
 for recommendation in recommendations:
     print(image_df['image_label'][recommendation])
 
