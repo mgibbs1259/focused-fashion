@@ -38,7 +38,8 @@ This includes images:
 2) For training, plot loss & F1 on validation over epochs - Jessica
 3) Ranking - Mary (Almost Done)
 4) Pre-trained models - Both
--Resnet50 and Densenet161
+
+- Resnet50 and Densenet161
 5) Presentation - Both
 6) Joint report - Both
 7) Web App - Mary 
