@@ -31,6 +31,7 @@ https://www.kaggle.com/renatobmlr/pytorch-densenet-as-feature-extractor
 https://towardsdatascience.com/simple-implementation-of-densely-connected-convolutional-networks-in-pytorch-3846978f2f36
 
 https://github.com/spotify/annoy
+https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
 
 REMOVED FROM TRAIN UNCOMMON LABELS 161, 162, and 46
 This includes images: 
