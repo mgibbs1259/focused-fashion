@@ -38,7 +38,7 @@ This includes images:
 
 ## TO DO
 1) Model architecture/tuning - Both (Mary has 2 baseline models)
-2) For training, plot loss & F1 on validation over epochs - Jessica
+2) For training, plot loss & F1 on validation over epochs, class distribution plots - Jessica
 3) Ranking - Mary (Almost Done)
 4) Pre-trained models - Both
 
