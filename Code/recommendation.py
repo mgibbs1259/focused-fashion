@@ -2,7 +2,6 @@ import os
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
@@ -156,7 +155,7 @@ sklearn_store_feature_maps = store_feature_maps.view(store_feature_maps.size(0),
 sklearn_store_feature_maps = sklearn_store_feature_maps.detach().cpu().numpy()
 
 
-# Annoy KNN
+# Annoy Approximate KNN
 
 # Store
 t = AnnoyIndex(annoy_store_feature_maps.size()[1], 'euclidean')  # Length of item vector that will be indexed
