@@ -42,10 +42,10 @@ class RecommendationDataset(Dataset):
 
 def create_data_loader(data_path, img_dir, batch_size):
      """Returns an image loader for the model."""
-     img_transform = transforms.Compose([transforms.Resize((100, 100), interpolation=Image.BICUBIC),
+     img_transform = transforms.Compose([transforms.Resize((120, 120), interpolation=Image.BICUBIC),
                                          transforms.ToTensor()])
      dataset = RecommendationDataset(img_dir, img_transform, data_path)
-     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
      return loader
 
 
@@ -83,32 +83,34 @@ store_loader = create_data_loader(STORE_CSV, STORE_PATH, batch_size=len(os.listd
 
 
 # Load model
-np.random.seed(42)
-torch.manual_seed(42)
-BATCH_SIZE = 1024
-DROPOUT = 0.5
+DROPOUT = 0.50
 
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (12, 12), stride=2, padding=1) # Output (n_examples, 32, 46, 46)
+        self.conv1 = nn.Conv2d(3, 32, (12, 12), stride=2, padding=1)
         self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2) # Output (n_examples, 32, 23, 23)
+        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
 
-        self.conv2 = nn.Conv2d(32, 64, (6, 6), stride=2, padding=1) # Output (n_examples, 64, 10, 10)
+        self.conv2 = nn.Conv2d(32, 64, (8, 8), stride=2, padding=1)
         self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 5, 5)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
 
-        self.linear1 = nn.Linear(64*5*5, BATCH_SIZE) # Input will be flattened to (n_examples, 64, 5, 5)
-        self.linear1_bn = nn.BatchNorm1d(BATCH_SIZE)
+        self.conv3 = nn.Conv2d(64, 128, (4, 4), stride=2, padding=1)
+        self.convnorm3 = nn.BatchNorm2d(128)
+        self.pool3 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+
+        self.linear1 = nn.Linear(128*1*1, 1024)
+        self.linear1_bn = nn.BatchNorm1d(1024)
         self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(BATCH_SIZE, 149)
+        self.linear2 = nn.Linear(1024, 149)
 
         self.relu = torch.relu
 
     def forward(self, x):
         x = self.pool1(self.convnorm1(self.relu(self.conv1(x))))
         x = self.pool2(self.convnorm2(self.relu(self.conv2(x))))
+        x = self.pool3(self.convnorm3(self.relu(self.conv3(x))))
         x = self.drop(self.linear1_bn(self.relu(self.linear1(x.view(len(x), -1)))))
         x = self.linear2(x)
         return x
@@ -116,11 +118,13 @@ class CNN(nn.Module):
 
 def extract_feature_maps(x, model):
     x = model.pool1(model.convnorm1(model.relu(model.conv1(x))))
-    return model.pool2(model.convnorm2(model.relu(model.conv2(x))))
+    x = model.pool2(model.convnorm2(model.relu(model.conv2(x))))
+    x = model.pool3(model.convnorm3(model.relu(model.conv3(x))))
+    return x
 
 
 model = CNN()
-model.load_state_dict(torch.load("model_number_1.pt"))
+model.load_state_dict(torch.load("model_number_2.pt"))
 
 
 def get_feature_maps(loader, model):
@@ -149,14 +153,14 @@ sk_store_feature_maps = annoy_store_feature_maps.detach().cpu().numpy()
 # Annoy Approximate KNN
 
 # Store
-t = AnnoyIndex(annoy_store_feature_maps.size()[1], 'dot')  # Length of item vector that will be indexed
+t = AnnoyIndex(annoy_store_feature_maps.size()[1], 'euclidean')  # Length of item vector that will be indexed
 for i in range(annoy_store_feature_maps.size()[0]):
     t.add_item(i, annoy_store_feature_maps[i])
 t.build(150) # 150 trees, more trees gives higher precision when querying
 t.save('store.ann')
 
 # Example
-u = AnnoyIndex(annoy_example_feature_maps.size()[1], 'dot')
+u = AnnoyIndex(annoy_example_feature_maps.size()[1], 'euclidean')
 u.load('store.ann')
 recommendations = u.get_nns_by_item(0, 5)
 print(u.get_nns_by_item(0, 5, include_distances=True))
@@ -176,7 +180,7 @@ for i in ind:
 
 # Sklearn KMeans
 kmeans_df = image_df
-kmeans_model = KMeans(n_clusters=10).fit(sk_store_feature_maps)
+kmeans_model = KMeans(n_clusters=15).fit(sk_store_feature_maps)
 kmeans_df['cluster_labels'] = kmeans_model.labels_
 y = kmeans_model.predict(sk_example_feature_maps)
 print("Predicted example label: {}".format(int(y)))
