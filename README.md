@@ -43,6 +43,7 @@ This includes images:
 4) Pre-trained models - Both
 
 - Resnet50 and Densenet161
-5) Presentation - Both
-6) Joint report - Both
-7) Web App - Mary 
+5) Parameter tables and network diagrams - Both
+6) Presentation - Both
+7) Joint report - Both
+8) Web App - Mary 
