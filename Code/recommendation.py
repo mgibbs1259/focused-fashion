@@ -133,11 +133,44 @@ print(example_feature_maps.size())
 store_feature_maps = get_feature_maps(store_loader, model)
 print(store_feature_maps.size())
 
-# Concatenate feature maps
+# Current feature maps (n, fm, h, w)
+
+# Reshape feature maps to be (n, fm*h*w)
+annoy_example_feature_maps = example_feature_maps.view(example_feature_maps.size(0), -1)
+print(annoy_example_feature_maps.size())
+annoy_store_feature_maps = store_feature_maps.view(store_feature_maps.size(0), -1)
+print(annoy_store_feature_maps.size())
+
+# Reshape feature maps to be (n, fm*h, w)
+sklearn_example_feature_maps = example_feature_maps.view(example_feature_maps.size(0),
+                                                         example_feature_maps.size(1)*example_feature_maps.size(2),
+                                                         example_feature_maps.size(3))
+sklearn_example_feature_maps = sklearn_example_feature_maps.detach().cpu().numpy()
+
+sklearn_store_feature_maps = store_feature_maps.view(store_feature_maps.size(0),
+                                                     store_feature_maps.size(1)*store_feature_maps.size(2),
+                                                     store_feature_maps.size(3))
+sklearn_store_feature_maps = sklearn_store_feature_maps.detach().cpu().numpy()
 
 
+# Annoy KNN
 
-#KNN
+# Store
+t = AnnoyIndex(annoy_store_feature_maps.size()[1], 'euclidean')  # Length of item vector that will be indexed
+for i in range(annoy_store_feature_maps.size()[0]):
+    t.add_item(i, annoy_store_feature_maps[i])
+t.build(10) # 10 trees, more trees gives higher precision when querying
+t.save('store.ann')
+
+# Example
+u = AnnoyIndex(annoy_example_feature_maps.size()[1], 'euclidean')
+u.load('store.ann') # super fast, will just mmap the file
+recommendations = u.get_nns_by_item(0, 5)
+print(u.get_nns_by_item(0, 5)) # will find the 5 nearest neighbors
+for recommendation in recommendations:
+    print(image_df['image_label'][recommendation])
+
+# Sklearn KNN
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
 # rng = np.random.RandomState(0)
 # X = concatenated feature maps
@@ -145,24 +178,3 @@ print(store_feature_maps.size())
 # dist, ind = tree.query(X[:1], k=3)
 # print(ind) # indices of 3 closest neighbors
 # print(dist) # distances to 3 closest neighbors
-
-
-# # K-means
-# def kmeans_clustering_elbow_curve(X):
-#     """Shows an elbow curve plot to determine the appropriate number of k-means clusters."""
-#     distorsions = []
-#     for k in range(1, 20):
-#         kmeans_model = KMeans(n_clusters=k)
-#         kmeans_model.fit(X)
-#         distorsions.append(kmeans_model.inertia_)
-#     fig = plt.figure(figsize=(15, 5))
-#     plt.plot(range(1, 4), distorsions)
-#     plt.title('Elbow Curve')
-#     plt.show()
-#
-#
-# def kmeans_clustering(X, clusters=10):
-#     """Returns the kmeans model and predicted values."""
-#     kmeans_model = KMeans(n_clusters=clusters).fit(X)
-#     predict_values = kmeans_model.predict(X)
-#     return kmeans_model, predict_values
