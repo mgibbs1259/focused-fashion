@@ -111,7 +111,7 @@ train_data_loader = create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZ
 
 VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
-val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
+val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=BATCH_SIZE/2)
 
 
 model = CNN().to(device)

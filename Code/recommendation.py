@@ -9,7 +9,7 @@ from sklearn.cluster import KMeans
 
 
 # Read in image of interest
-img = Image.open("2dresses.jpg")
+img = Image.open("Blouses/3blouses.jpg")
 img = img.resize((100, 100))
 img_array = np.array(img)
 print(img_array.shape)
@@ -60,26 +60,6 @@ def extract_feature_maps(x, model):
 
 
 
-# K-means
-def kmeans_clustering_elbow_curve(X):
-    """Shows an elbow curve plot to determine the appropriate number of k-means clusters."""
-    distorsions = []
-    for k in range(1, 20):
-        kmeans_model = KMeans(n_clusters=k)
-        kmeans_model.fit(X)
-        distorsions.append(kmeans_model.inertia_)
-    fig = plt.figure(figsize=(15, 5))
-    plt.plot(range(1, 4), distorsions)
-    plt.title('Elbow Curve')
-    plt.show()
-
-
-def kmeans_clustering(X, clusters=10):
-    """Returns the kmeans model and predicted values."""
-    kmeans_model = KMeans(n_clusters=clusters).fit(X)
-    predict_values = kmeans_model.predict(X)
-    return kmeans_model, predict_values
-
 #KNN
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
 # rng = np.random.RandomState(0)
@@ -88,3 +68,24 @@ def kmeans_clustering(X, clusters=10):
 # dist, ind = tree.query(X[:1], k=3)
 # print(ind) # indices of 3 closest neighbors
 # print(dist) # distances to 3 closest neighbors
+
+
+# # K-means
+# def kmeans_clustering_elbow_curve(X):
+#     """Shows an elbow curve plot to determine the appropriate number of k-means clusters."""
+#     distorsions = []
+#     for k in range(1, 20):
+#         kmeans_model = KMeans(n_clusters=k)
+#         kmeans_model.fit(X)
+#         distorsions.append(kmeans_model.inertia_)
+#     fig = plt.figure(figsize=(15, 5))
+#     plt.plot(range(1, 4), distorsions)
+#     plt.title('Elbow Curve')
+#     plt.show()
+#
+#
+# def kmeans_clustering(X, clusters=10):
+#     """Returns the kmeans model and predicted values."""
+#     kmeans_model = KMeans(n_clusters=clusters).fit(X)
+#     predict_values = kmeans_model.predict(X)
+#     return kmeans_model, predict_values
