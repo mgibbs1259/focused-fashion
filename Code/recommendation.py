@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -5,14 +7,77 @@ import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 from PIL import Image
-from sklearn.cluster import KMeans
+from annoy import AnnoyIndex
+from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader
 
 
-# Read in image of interest
-img = Image.open("Blouses/3blouses.jpg")
-img = img.resize((100, 100))
-img_array = np.array(img)
-print(img_array.shape)
+class RecommendationDataset(Dataset):
+    """A dataset for the fashion images and fashion image labels.
+
+    Arguments:
+        Data csv path
+        Image directory path
+        Image transformation
+    """
+    def __init__(self, img_dir_path, img_transform, data_csv_path):
+        self.data_csv_path = data_csv_path
+        self.img_dir_path = img_dir_path
+        self.img_transform = img_transform
+        self.df = pd.read_csv(self.data_csv_path, header=0).reset_index(drop=True)
+        self.img_id = self.df['image_id']
+
+    def __getitem__(self, index):
+        img = Image.open(os.path.join(self.img_dir_path, str(self.img_id[index])))
+        img = img.convert('RGB')
+        if self.img_transform is not None:
+            img = self.img_transform(img)
+        return img
+
+    def __len__(self):
+        return self.img_id.shape[0]
+
+
+def create_data_loader(data_path, img_dir, batch_size):
+     """Returns an image loader for the model."""
+     img_transform = transforms.Compose([transforms.Resize((100, 100), interpolation=Image.BICUBIC),
+                                         transforms.ToTensor()])
+     dataset = RecommendationDataset(img_dir, img_transform, data_path)
+     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+     return loader
+
+
+# Define path to image of interest
+EXAMPLE_PATH = "/home/ubuntu/Final-Project-Group8/Code/example_img.jpg"
+
+# Create a df mapping image of interest
+ex_image_id = [0]
+ex_image_label = ["example_img.jpg"]
+ex_image_dict = {"image_id": ex_image_id, "image_label": ex_image_label}
+ex_image_df = pd.DataFrame(ex_image_dict)
+# ex_image_df.to_csv("example_image.csv")
+
+# Define path to image of interest csv
+EXAMPLE_CSV = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images.csv"
+
+
+# Define path to store images
+STORE_PATH = "/home/ubuntu/Final-Project-Group8/Code/Blouses"
+
+# Create a df mapping Banana Republic Images
+image_id = [i for i in range(len(os.listdir(STORE_PATH)))]
+image_label = os.listdir(STORE_PATH)
+image_dict = {"image_id": image_id, "image_label": image_label}
+image_df = pd.DataFrame(image_dict)
+# image_df.to_csv("banana_republic_images.csv")
+
+# Define path to store csv
+STORE_CSV = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images.csv"
+
+
+# Create data loaders for both
+example_loader = create_data_loader(EXAMPLE_CSV, EXAMPLE_PATH, batch_size=1)
+store_loader = create_data_loader(STORE_CSV, STORE_PATH, batch_size=len(os.listdir(STORE_PATH)))
 
 
 # Load model
@@ -52,7 +117,6 @@ def extract_feature_maps(x, model):
 
 # model = CNN()
 # model.load_state_dict(torch.load("model_number_1.pt"))
-# x = torch.zeros((BATCH_SIZE, 3, 100, 100))
 # features = extract_feature_maps(x, model)
 
 
