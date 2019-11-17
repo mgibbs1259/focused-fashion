@@ -175,10 +175,11 @@ for recommendation in recommendations:
 
 # Sklearn KNN
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
+rng = np.random.RandomState(0)
 tree = BallTree(sk_store_feature_maps)
 dist, ind = tree.query(sk_example_feature_maps, k=5)
-print(ind) # indices of 3 closest neighbors
-print(dist) # distances to 3 closest neighbors
+print(ind) # indices of 5 closest neighbors
+print(dist) # distances to 5 closest neighbors
 for i in ind:
     for idx in i:
         print(image_df['image_label'][idx])
