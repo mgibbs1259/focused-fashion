@@ -38,12 +38,17 @@ This includes images:
 
 ## TO DO
 1) Model architecture/tuning - Both (Mary has 2 baseline models)
-2) For training, plot loss & F1 on validation over epochs, class distribution plots - Jessica
+  a) Run best with more Epochs- Jessica- IN PROGRESS🔥🔥🔥
+  b) Run best model with generated data- Jessica 
+  c) Run Marys model with the new architecture- Jessica
+  d) Mess with the architecture 🤪
+2) For training, plot loss & F1 on validation over epochs, class distribution plots - Jessica 😒
 3) Ranking - Mary (Almost Done)
 4) Pre-trained models - Both
-
-- Resnet50 and Densenet161
-5) Parameter tables and network diagrams - Both
+  a) Resnet50 
+  b) Densenet161
+  c) MobileNet
+5) Parameter tables and network diagrams - Both 🤞🏻
 6) Presentation - Both
 7) Joint report - Both
 8) Web App - Mary 
