@@ -4,7 +4,12 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 
 
-def KMeansClusteringElbowCurve(X):
+def resize_feature_maps():
+    """Returns resized feature maps."""
+
+
+
+def kmeans_clustering_elbow_curve(X):
     """Shows an elbow curve plot to determine the appropriate number of k-means clusters."""
     distorsions = []
     for k in range(1, 20):
@@ -17,8 +22,8 @@ def KMeansClusteringElbowCurve(X):
     plt.show()
 
 
-def KMeansClustering(X, clusters=10):
-    """Returns a pandas data frame containing the quote_dict and cluster label."""
+def kmeans_clustering(X, clusters=10):
+    """Returns the kmeans model and predicted values."""
     kmeans_model = KMeans(n_clusters=clusters).fit(X)
     predict_values = kmeans_model.predict(X)
     return kmeans_model, predict_values
