@@ -26,9 +26,10 @@ class RecommendationDataset(Dataset):
         self.img_transform = img_transform
         self.df = pd.read_csv(self.data_csv_path, header=0).reset_index(drop=True)
         self.img_id = self.df['image_id']
+        self.img_label = self.df['image_label']
 
     def __getitem__(self, index):
-        img = Image.open(os.path.join(self.img_dir_path, str(self.img_id[index])))
+        img = Image.open(os.path.join(self.img_dir_path, str(self.img_label[index])))
         img = img.convert('RGB')
         if self.img_transform is not None:
             img = self.img_transform(img)
@@ -48,7 +49,7 @@ def create_data_loader(data_path, img_dir, batch_size):
 
 
 # Define path to image of interest
-EXAMPLE_PATH = "/home/ubuntu/Final-Project-Group8/Code/example_img.jpg"
+EXAMPLE_PATH = "/home/ubuntu/Final-Project-Group8/Code/Example"
 
 # Create a df mapping image of interest
 ex_image_id = [0]
@@ -58,7 +59,7 @@ ex_image_df = pd.DataFrame(ex_image_dict)
 # ex_image_df.to_csv("example_image.csv")
 
 # Define path to image of interest csv
-EXAMPLE_CSV = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images.csv"
+EXAMPLE_CSV = "/home/ubuntu/Final-Project-Group8/Code/example_image.csv"
 
 
 # Define path to store images
@@ -115,10 +116,22 @@ def extract_feature_maps(x, model):
     return model.pool2(model.convnorm2(model.relu(model.conv2(x))))
 
 
-# model = CNN()
-# model.load_state_dict(torch.load("model_number_1.pt"))
-# features = extract_feature_maps(x, model)
+model = CNN()
+model.load_state_dict(torch.load("model_number_1.pt"))
 
+
+def get_feature_maps(loader, model):
+    for train_idx, features in enumerate(loader):
+        features = extract_feature_maps(features, model)
+        return features
+
+# Get features for example_loader
+example_feature_maps = get_feature_maps(example_loader, model)
+print(example_feature_maps.size())
+
+# Get features for store_loader
+store_feature_maps = get_feature_maps(store_loader, model)
+print(store_feature_maps.size())
 
 # Concatenate feature maps
 
