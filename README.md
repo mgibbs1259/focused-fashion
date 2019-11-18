@@ -39,9 +39,12 @@ This includes images:
 ## TO DO
 1) Model architecture/tuning - Both (Mary has 2 baseline models)
   a) Run best with more Epochs- Jessica- IN PROGRESS🔥🔥🔥
-  b) Run best model with generated data- Jessica 
-  c) Run Marys model with the new architecture- Jessica
+  b) Run best model with generated data- Jessica : Adding the data generator causes memory errors
+  c) Run Marys model with the new architecture- Jessica : Can't run, memory errors. 
   d) Mess with the architecture 🤪
+  
+1.1) Ask for help addressing memory errors. 
+
 2) For training, plot loss & F1 on validation over epochs, class distribution plots - Jessica 😒
 3) Ranking - Mary (Almost Done)
 4) Pre-trained models - Both
