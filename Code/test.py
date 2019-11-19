@@ -9,7 +9,6 @@ from ast import literal_eval
 from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
-# from keras.metrics import top_k_categorical_accuracy
 from sklearn.metrics import f1_score
 
 
@@ -112,13 +111,6 @@ with torch.no_grad():
             file.write('Test BCELoss: {} \n'.format(bceloss_output))
         # Print status
         print('Test BCELoss: {}'.format(bceloss_output))
-
-        # top_5_categorical_accuracy = top_k_categorical_accuracy(tar, y_pred, k=5)
-        # # Write to file
-        # with open("test_{}.txt".format(MODEL_NAME), "a") as file:
-        #     file.write('Test Top 5 Categorical Accuracy Score: {} \n'.format(top_5_categorical_accuracy))
-        # # Print status
-        # print('Test Top 5 Categorical Accuracy Score: {}'.format(top_5_categorical_accuracy))
 
         cpu_tar = tar.cpu().numpy()
         cpu_val_output = y_pred.cpu().numpy()
