@@ -10,13 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.metrics import f1_score
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-np.random.seed(42)
-torch.manual_seed(42)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
-
-
+# Load data
 class TestDataset(Dataset):
     """A dataset for the fashion images and fashion image labels.
 
@@ -93,9 +87,12 @@ class CNN(nn.Module):
 
 
 MODEL_NAME = "model_number_2"
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 model = CNN()
 model.load_state_dict(torch.load("{}.pt".format(MODEL_NAME)))
 model.eval()
+
 with torch.no_grad():
     for idx, (feat, tar) in enumerate(test_data_loader):
         test_input, test_target = feat.to(device), tar.to(device)
