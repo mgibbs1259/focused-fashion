@@ -125,12 +125,13 @@ def extract_feature_maps(x, model):
 
 model = CNN()
 model.load_state_dict(torch.load("model_number_2.pt"))
-
+model.eval()
 
 def get_feature_maps(loader, model):
-    for train_idx, features in enumerate(loader):
-        features = extract_feature_maps(features, model)
-        return features
+    with torch.no_grad():
+        for train_idx, features in enumerate(loader):
+            features = extract_feature_maps(features, model)
+            return features
 
 # Get features for example_loader
 example_feature_maps = get_feature_maps(example_loader, model)
