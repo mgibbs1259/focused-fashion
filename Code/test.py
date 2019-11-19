@@ -97,16 +97,17 @@ model.eval()
 with torch.no_grad():
     for idx, (feat, tar) in enumerate(test_data_loader):
         test_input, test_target = feat.to(device), tar.to(device)
-        logit_val_output = model(test_input)
-        sigmoid_val_output = torch.sigmoid(logit_val_output)
-        top_5_categorical_accuracy = top_k_categorical_accuracy(tar, sigmoid_val_output, k=5)
+        logit_test_output = model(test_input)
+        sigmoid_test_output = torch.sigmoid(logit_test_output)
+        y_pred = (sigmoid_test_output > 0.5).float()
+        top_5_categorical_accuracy = top_k_categorical_accuracy(tar, y_pred, k=5)
         # Write to file
         with open("test_{}.txt".format(MODEL_NAME), "a") as file:
             file.write('Test Top 5 Categorical Accuracy Score: {} \n'.format(top_5_categorical_accuracy))
         # Print status
         print('Test Top 5 Categorical Accuracy Score: {}'.format(top_5_categorical_accuracy))
         cpu_tar = tar.cpu().numpy()
-        cpu_val_output = np.where(sigmoid_val_output.cpu().numpy() > 0.5, 1, 0)
+        cpu_val_output = np.where(sigmoid_test_output.cpu().numpy() > 0.5, 1, 0)
         f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
         # Write to file
         with open("test_{}.txt".format(MODEL_NAME), "a") as file:
