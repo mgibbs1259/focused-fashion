@@ -153,14 +153,14 @@ sk_store_feature_maps = annoy_store_feature_maps.detach().cpu().numpy()
 # Annoy Approximate KNN
 
 # Store
-t = AnnoyIndex(annoy_store_feature_maps.size()[1], 'euclidean')  # Length of item vector that will be indexed
+t = AnnoyIndex(annoy_store_feature_maps.size()[1], 'dot')  # Length of item vector that will be indexed
 for i in range(annoy_store_feature_maps.size()[0]):
     t.add_item(i, annoy_store_feature_maps[i])
 t.build(150) # 150 trees, more trees gives higher precision when querying
 t.save('store.ann')
 
 # Example
-u = AnnoyIndex(annoy_example_feature_maps.size()[1], 'euclidean')
+u = AnnoyIndex(annoy_example_feature_maps.size()[1], 'dot')
 u.load('store.ann')
 recommendations = u.get_nns_by_item(0, 5)
 print(u.get_nns_by_item(0, 5, include_distances=True))
