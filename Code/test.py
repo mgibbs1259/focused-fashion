@@ -91,6 +91,7 @@ class CNN(nn.Module):
         x = self.linear2(x)
         return x
 
+
 MODEL_NAME = "model_number_2"
 model = CNN()
 model.load_state_dict(torch.load("{}.pt".format(MODEL_NAME)))
