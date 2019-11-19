@@ -7,6 +7,7 @@ from torch import nn
 from PIL import Image
 from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
+from keras.metrics import top_k_categorical_accuracy
 from sklearn.metrics import f1_score
 
 
@@ -98,6 +99,12 @@ with torch.no_grad():
         test_input, test_target = feat.to(device), tar.to(device)
         logit_val_output = model(test_input)
         sigmoid_val_output = torch.sigmoid(logit_val_output)
+        top_5_categorical_accuracy = top_k_categorical_accuracy(tar, sigmoid_val_output, k=5)
+        # Write to file
+        with open("test_{}.txt".format(MODEL_NAME), "a") as file:
+            file.write('Test Top 5 Categorical Accuracy Score: {} \n'.format(top_5_categorical_accuracy))
+        # Print status
+        print('Test Top 5 Categorical Accuracy Score: {}'.format(top_5_categorical_accuracy))
         cpu_tar = tar.cpu().numpy()
         cpu_val_output = np.where(sigmoid_val_output.cpu().numpy() > 0.5, 1, 0)
         f1 = f1_score(cpu_tar, cpu_val_output, average='micro')

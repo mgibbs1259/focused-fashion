@@ -64,7 +64,7 @@ EXAMPLE_CSV = "/home/ubuntu/Final-Project-Group8/Code/example_image.csv"
 
 
 # Define path to store images
-STORE_PATH = "/home/ubuntu/Final-Project-Group8/Code/Blouses"
+STORE_PATH = "/home/ubuntu/Final-Project-Group8/Code/Banana_Republic"
 
 # Create a df mapping Banana Republic Images
 image_id = [i for i in range(len(os.listdir(STORE_PATH)))]
