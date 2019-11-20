@@ -38,20 +38,17 @@ This includes images:
 
 ## TO DO
 1) Model architecture/tuning - Both (Mary has 2 baseline models)
-  a) Run best with more Epochs- Jessica- IN PROGRESS🔥🔥🔥
-  b) Run best model with generated data- Jessica : Adding the data generator causes memory errors
-  c) Run Marys model with the new architecture- Jessica : Can't run, memory errors. 
-  d) Mess with the architecture 🤪
+  a) Run best with image transformations
   
-1.1) Ask for help addressing memory errors. 
+2) For training, plot loss over epochs, class distribution plots - Jessica 😒
+  - Baseline, Pretrain (All)
 
-2) For training, plot loss & F1 on validation over epochs, class distribution plots - Jessica 😒
-3) Ranking - Mary (Almost Done)
 4) Pre-trained models - Both
   a) Resnet50 
   b) Densenet161
   c) MobileNet
+  
 5) Parameter tables and network diagrams - Both 🤞🏻
 6) Presentation - Both
 7) Joint report - Both
-8) Web App - Mary 
+8) Web App - Both
