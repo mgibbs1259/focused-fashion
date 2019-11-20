@@ -88,12 +88,11 @@ class CNN(nn.Module):
             if n < 455:
                 param.requires_grad = False
         self.features = nn.Sequential(*list(self.resnet_model.children())[:-1])
-        self.linear1 = nn.Linear(2048, 149)
+        self.linear = nn.Linear(2048, 149)
 
     def forward(self, x):
         x = self.features(x)
-        x = self.linear1_bn(self.linear1(x.view(len(x), -1)))
-        x = self.linear2(x)
+        x = self.linear1(x.view(len(x), -1))
         return x
 
 
