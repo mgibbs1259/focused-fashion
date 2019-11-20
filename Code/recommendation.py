@@ -115,11 +115,13 @@ class CNN(nn.Module):
         x = self.linear2(x)
         return x
 
+# Model predict will give me correct feature vector
 
 def extract_feature_maps(x, model):
     x = model.pool1(model.convnorm1(model.relu(model.conv1(x))))
     x = model.pool2(model.convnorm2(model.relu(model.conv2(x))))
     x = model.pool3(model.convnorm3(model.relu(model.conv3(x))))
+    x = model.linear1(x.view(len(x), -1))
     return x
 
 
@@ -141,27 +143,17 @@ print(example_feature_maps.size())
 store_feature_maps = get_feature_maps(store_loader, model)
 print(store_feature_maps.size())
 
-# Current feature maps (n, fm, h, w)
-
-# Reshape feature maps to be (n, fm*h*w)
-annoy_example_feature_maps = example_feature_maps.view(example_feature_maps.size(0), -1)
-sk_example_feature_maps = annoy_example_feature_maps.detach().cpu().numpy()
-
-annoy_store_feature_maps = store_feature_maps.view(store_feature_maps.size(0), -1)
-sk_store_feature_maps = annoy_store_feature_maps.detach().cpu().numpy()
-
 
 # Annoy Approximate KNN
-
 # Store
-t = AnnoyIndex(annoy_store_feature_maps.size()[1], 'dot')  # Length of item vector that will be indexed
-for i in range(annoy_store_feature_maps.size()[0]):
-    t.add_item(i, annoy_store_feature_maps[i])
+t = AnnoyIndex(store_feature_maps.size()[1], 'dot')  # Length of item vector that will be indexed
+for i in range(store_feature_maps.size()[0]):
+    t.add_item(i, store_feature_maps[i])
 t.build(150) # 150 trees, more trees gives higher precision when querying
 t.save('store.ann')
 
 # Example
-u = AnnoyIndex(annoy_example_feature_maps.size()[1], 'dot')
+u = AnnoyIndex(example_feature_maps.size()[1], 'dot')
 u.load('store.ann')
 recommendations = u.get_nns_by_item(0, 5)
 print(u.get_nns_by_item(0, 5, include_distances=True))
@@ -171,18 +163,18 @@ for recommendation in recommendations:
 # Sklearn KNN
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
 rng = np.random.RandomState(42)
-tree = BallTree(sk_store_feature_maps)
-dist, ind = tree.query(sk_example_feature_maps, k=5)
+tree = BallTree(store_feature_maps)
+dist, ind = tree.query(example_feature_maps, k=5)
 print(ind) # indices of 5 closest neighbors
 print(dist) # distances to 5 closest neighbors
 for i in ind:
     for idx in i:
         print(image_df['image_label'][idx])
 
-# Sklearn KMeans
-kmeans_df = image_df
-kmeans_model = KMeans(n_clusters=15).fit(sk_store_feature_maps)
-kmeans_df['cluster_labels'] = kmeans_model.labels_
-y = kmeans_model.predict(sk_example_feature_maps)
-print("Predicted example label: {}".format(int(y)))
-print(kmeans_df[kmeans_df['cluster_labels'] == int(y)])
+# # Sklearn KMeans
+# kmeans_df = image_df
+# kmeans_model = KMeans(n_clusters=15).fit(store_feature_maps)
+# kmeans_df['cluster_labels'] = kmeans_model.labels_
+# y = kmeans_model.predict(example_feature_maps)
+# print("Predicted example label: {}".format(int(y)))
+# print(kmeans_df[kmeans_df['cluster_labels'] == int(y)])
