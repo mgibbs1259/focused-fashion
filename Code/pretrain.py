@@ -83,11 +83,11 @@ class CNN(nn.Module):
         super(CNN, self).__init__()
         self.resnet_model = models.resnet152(pretrained=True)
         n = 0
-        for param in self.parameters():
+        for child in self.resnet_model.children():
             n += 1
-            # print(n) # Will inform us of the total number of parameters in pretrained model
-            if n < 455:
-                param.requires_grad = False
+            if n < 8:
+                for param in child.parameters():
+                    param.requires_grad = False
         self.features = nn.Sequential(*list(self.resnet_model.children())[:-1])
         self.linear = nn.Linear(2048, 149)
 
