@@ -85,6 +85,7 @@ class CNN(nn.Module):
         n = 0
         for param in self.parameters():
             n += 1
+            # print(n) # Will inform us of the total number of parameters in pretrained model
             if n < 455:
                 param.requires_grad = False
         self.features = nn.Sequential(*list(self.resnet_model.children())[:-1])
