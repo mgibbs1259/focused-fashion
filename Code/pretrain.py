@@ -92,7 +92,7 @@ class CNN(nn.Module):
 
     def forward(self, x):
         x = self.features(x)
-        x = self.linear1(x.view(len(x), -1))
+        x = self.linear(x.view(len(x), -1))
         return x
 
 
