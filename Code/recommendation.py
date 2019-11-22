@@ -9,7 +9,7 @@ from PIL import Image
 from annoy import AnnoyIndex
 from sklearn.neighbors import BallTree
 from sklearn.cluster import KMeans
-from torchvision import transforms
+from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 
 
@@ -42,7 +42,8 @@ class RecommendationDataset(Dataset):
 
 def create_data_loader(data_path, img_dir, batch_size):
      """Returns an image loader for the model."""
-     img_transform = transforms.Compose([transforms.Resize((120, 120), interpolation=Image.BICUBIC),
+     img_transform = transforms.Compose([transforms.Resize(256),
+                                         transforms.CenterCrop(224),
                                          transforms.ToTensor()])
      dataset = RecommendationDataset(img_dir, img_transform, data_path)
      loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
@@ -79,55 +80,39 @@ STORE_CSV = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images.csv"
 
 # Create data loaders for both
 example_loader = create_data_loader(EXAMPLE_CSV, EXAMPLE_PATH, batch_size=1)
-store_loader = create_data_loader(STORE_CSV, STORE_PATH, batch_size=len(os.listdir(STORE_PATH)))
+store_loader = create_data_loader(STORE_CSV, STORE_PATH, batch_size=64)
 
 
 # Load model
-DROPOUT = 0.50
-
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (12, 12), stride=2, padding=1)
-        self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
-
-        self.conv2 = nn.Conv2d(32, 64, (8, 8), stride=2, padding=1)
-        self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-
-        self.conv3 = nn.Conv2d(64, 128, (4, 4), stride=2, padding=1)
-        self.convnorm3 = nn.BatchNorm2d(128)
-        self.pool3 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-
-        self.linear1 = nn.Linear(128*1*1, 1024)
-        self.linear1_bn = nn.BatchNorm1d(1024)
-        self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(1024, 149)
-
-        self.relu = torch.relu
+        self.mobile_model = models.mobilenet_v2(pretrained=True)
+        n = 0
+        for child in self.mobile_model.children():
+            n += 1
+            if n < 2:
+                for param in child.parameters():
+                    param.requires_grad = False
+        self.features = nn.Sequential(*list(self.mobile_model.children())[:-1])
+        self.linear = nn.Linear(62720, 149)
 
     def forward(self, x):
-        x = self.pool1(self.convnorm1(self.relu(self.conv1(x))))
-        x = self.pool2(self.convnorm2(self.relu(self.conv2(x))))
-        x = self.pool3(self.convnorm3(self.relu(self.conv3(x))))
-        x = self.drop(self.linear1_bn(self.relu(self.linear1(x.view(len(x), -1)))))
-        x = self.linear2(x)
+        x = self.features(x)
+        x = self.linear(x.view(len(x), -1))
         return x
 
-# Model predict will give me correct feature vector
 
 def extract_feature_maps(x, model):
-    x = model.pool1(model.convnorm1(model.relu(model.conv1(x))))
-    x = model.pool2(model.convnorm2(model.relu(model.conv2(x))))
-    x = model.pool3(model.convnorm3(model.relu(model.conv3(x))))
-    x = model.linear1(x.view(len(x), -1))
+    x = model.features(x)
+    x = model.linear(x)
     return x
 
 
 model = CNN()
-model.load_state_dict(torch.load("model_number_2.pt"))
+model.load_state_dict(torch.load("mobilenet_model.pt"))
 model.eval()
+
 
 def get_feature_maps(loader, model):
     with torch.no_grad():
@@ -135,9 +120,11 @@ def get_feature_maps(loader, model):
             features = extract_feature_maps(features, model)
             return features
 
+
 # Get features for example_loader
 example_feature_maps = get_feature_maps(example_loader, model)
 print(example_feature_maps.size())
+
 
 # Get features for store_loader
 store_feature_maps = get_feature_maps(store_loader, model)
@@ -160,6 +147,7 @@ print(u.get_nns_by_item(0, 5, include_distances=True))
 for recommendation in recommendations:
     print(image_df['image_label'][recommendation])
 
+
 # Sklearn KNN
 # https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
 rng = np.random.RandomState(42)
@@ -170,6 +158,7 @@ print(dist) # distances to 5 closest neighbors
 for i in ind:
     for idx in i:
         print(image_df['image_label'][idx])
+
 
 # # Sklearn KMeans
 # kmeans_df = image_df

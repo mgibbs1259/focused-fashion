@@ -5,11 +5,11 @@ import pandas as pd
 import torch
 import torch.optim as optim
 import tqdm
+from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 from ast import literal_eval
-from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
+from torchvision import transforms, models
 from torch import nn
 from sklearn.metrics import f1_score
 
@@ -65,12 +65,12 @@ torch.backends.cudnn.benchmark = False
 
 
 # Change this
-MODEL_NAME = "model_number_5"
+MODEL_NAME = "pretrain_mobilenet"
 
 
 LR = 0.01
-N_EPOCHS = 6
-BATCH_SIZE = 400
+N_EPOCHS = 3
+BATCH_SIZE = 64
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
@@ -81,26 +81,19 @@ with open("{}.txt".format(MODEL_NAME), "w") as file:
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.relu = torch.relu
-
-        self.conv1 = nn.Conv2d(3, 32, (5, 5), stride=1, padding=1)
-        self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-
-        self.conv2 = nn.Conv2d(32, 64, (3, 3), stride=1, padding=1)
-        self.convnorm2 = nn.BatchNorm2d(64)
-        self.avgpool = nn.AvgPool2d(kernel_size=(2, 2), stride=2)
-
-        self.linear1 = nn.Linear(193600, 1024)
-        self.linear1_bn = nn.BatchNorm1d(1024)
-
-        self.linear2 = nn.Linear(1024, 149)
+        self.mobile_model = models.mobilenet_v2(pretrained=True)
+        n = 0
+        for child in self.mobile_model.children():
+            n += 1
+            if n < 2:
+                for param in child.parameters():
+                    param.requires_grad = False
+        self.features = nn.Sequential(*list(self.mobile_model.children())[:-1])
+        self.linear = nn.Linear(62720, 149)
 
     def forward(self, x):
-        x = self.pool1(self.convnorm1(self.relu(self.conv1(x))))
-        x = self.avgpool(self.convnorm2(self.relu(self.conv2(x))))
-        x = self.linear1_bn(self.relu(self.linear1(x.view(len(x), -1))))
-        x = self.linear2(x)
+        x = self.features(x)
+        x = self.linear(x.view(len(x), -1))
         return x
 
 
@@ -111,7 +104,7 @@ train_data_loader = create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZ
 
 VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
 VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
-val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=BATCH_SIZE/2)
+val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=BATCH_SIZE)
 
 
 model = CNN().to(device)
@@ -148,9 +141,11 @@ for epoch in range(N_EPOCHS):
     with torch.no_grad():
         for val_idx, (feat, tar) in enumerate(val_data_loader):
             val_input, val_target = feat.to(device), tar.to(device)
-            val_output = model(val_input)
+            logit_val_output = model(val_input)
+            sigmoid_val_output = torch.sigmoid(logit_val_output)
+            y_pred = (sigmoid_val_output > 0.5).float()
             cpu_tar = tar.cpu().numpy()
-            cpu_val_output = np.where(val_output.cpu().numpy() > 0.5, 1, 0)
+            cpu_val_output = y_pred.cpu().numpy()
             f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
             # Write to file
             with open("{}.txt".format(MODEL_NAME), "a") as file:
@@ -162,4 +157,4 @@ for epoch in range(N_EPOCHS):
 
 
 # Save model
-torch.save(model.state_dict(), '{}.pt'.format(MODEL_NAME))
+torch.save(model.state_dict(), "{}.pt".format(MODEL_NAME))
