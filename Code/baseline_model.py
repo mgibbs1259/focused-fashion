@@ -15,9 +15,9 @@ from sklearn.preprocessing import MultiLabelBinarizer
 
 
 TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/train"
-TRAIN_INFO_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_info.csv"
+TRAIN_INFO_PATH = "/home/ubuntu/Final-Project-Group8/Data/train.csv"
 VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/validation"
-VAL_INFO_PATH = "/home/ubuntu/Final-Project-Group8/Data/validation_info.csv"
+VAL_INFO_PATH = "/home/ubuntu/Final-Project-Group8/Data/validation.csv"
 
 
 class FashionDataset(Dataset):
