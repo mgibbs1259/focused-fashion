@@ -97,12 +97,12 @@ class CNN(nn.Module):
         return x
 
 
-TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train_ann.csv"
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train.csv"
 TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_train"
 train_data_loader = create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
-VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/val_ann.csv"
+VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/validation.csv"
 VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=BATCH_SIZE)
 

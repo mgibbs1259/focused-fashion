@@ -9,7 +9,7 @@ from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
-DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test_ann.csv"
+DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test.csv"
 IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
 
 

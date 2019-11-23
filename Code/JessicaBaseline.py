@@ -59,12 +59,12 @@ class CNN(nn.Module):
             #return this in the exam torch.sigmoid(x)
 
 
-TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/train_ann.csv"
+TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/train.csv"
 TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_train"
 train_data_loader = load_images.create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
 
 
-VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/val_ann.csv"
+VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/validation.csv"
 VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_validation"
 val_data_loader = load_images.create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
 

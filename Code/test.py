@@ -52,7 +52,7 @@ def create_data_loader(data_path, img_dir, batch_size):
     return loader
 
 
-TEST_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test_ann.csv"
+TEST_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test.csv"
 TEST_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_test"
 test_data_loader = create_data_loader(TEST_DATA_PATH, TEST_IMG_DIR, batch_size=64)
 

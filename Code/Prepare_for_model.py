@@ -1,8 +1,8 @@
 import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
 
-validation = pd.read_csv("val_ann.csv")
-train = pd.read_csv("train_ann.csv")
+validation = pd.read_csv("validation.csv")
+train = pd.read_csv("train.csv")
 test = pd.read_csv("test.csv")
 
 mlb = MultiLabelBinarizer()

@@ -50,7 +50,7 @@ def save_images(image_urls, image_urls_type):
     i = 1
     for url in image_urls:
         img_data = requests.get(url).content
-        f = open("{}_{}.jpg".format(image_urls_type, i), "wb")
+        f = open("{}{}.jpg".format(i, image_urls_type), "wb")
         f.write(img_data)
         f.close()
         i += 1

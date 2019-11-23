@@ -2,7 +2,7 @@ import os
 import pandas as pd
 #this script cross references the labels in the csv files with the images in the directories.
 #if value counts returns false that means there are missing images from the csv files.
-DATA_PATH_VAL = "/home/ubuntu/Final-Project-Group8/val_ann.csv"
+DATA_PATH_VAL = "/home/ubuntu/Final-Project-Group8/validation.csv"
 IMG_DIR_VAL = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_validation"
 
 images = []
@@ -32,7 +32,7 @@ mask = df['file name'].isin(images)
 
 mask.value_counts()
 
-DATA_PATH_TRAIN = "/home/ubuntu/Final-Project-Group8/train_ann.csv"
+DATA_PATH_TRAIN = "/home/ubuntu/Final-Project-Group8/train.csv"
 IMG_DIR_TRAIN = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/output_train"
 
 images = []

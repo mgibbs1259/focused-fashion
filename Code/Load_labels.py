@@ -66,7 +66,7 @@ for data in datas.values():
 
 #write out val_ann and train_ann as csv
 #train_ann.to_csv("train_ann_NEW.csv")
-# val_ann.to_csv("val_ann.csv")
+# val_ann.to_csv("validation.csv")
 # test2.to_csv("test.csv")
 
 #convert to correct format
