@@ -4,6 +4,8 @@
 
 **First, install the Chrome browser driver:**
 
+MacOS
+
 `brew install chromedriver`
 
 **Second, create and activate a Python virtual environment:** 
