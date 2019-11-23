@@ -4,7 +4,7 @@
 
 **First, install the Chrome browser driver:**
 
-MacOS
+macOS
 
 `brew install chromedriver`
 
