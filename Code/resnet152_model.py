@@ -8,8 +8,8 @@ import torch.optim as optim
 from torch import nn
 from PIL import Image
 from ast import literal_eval
-from torchvision import transforms
 from sklearn.metrics import f1_score
+from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
 
@@ -51,43 +51,40 @@ class FashionDataset(Dataset):
 
 def create_data_loader(img_dir, info_csv_path, batch_size):
     """Returns a data loader for the model."""
-    img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BICUBIC),
+    img_transform = transforms.Compose([transforms.Resize(256),
+                                        transforms.RandomRotation(degrees=15),
+                                        transforms.RandomHorizontalFlip(),
+                                        transforms.RandomVerticalFlip(),
+                                        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
+                                        transforms.CenterCrop(224),
                                         transforms.ToTensor()])
     img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
-    loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
-    return loader
+    data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+    return data_loader
 
 
-MODEL_NAME = "jessica_model_1"
-LR = 5e-3
-N_EPOCHS = 5
-BATCH_SIZE = 256
-DROPOUT = 0.10
+MODEL_NAME = "resnet152_model"
+LR = 0.01
+N_EPOCHS = 3
+BATCH_SIZE = 64
 
 
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (3, 3), stride=1, padding=1)
-        self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
-
-        self.conv2 = nn.Conv2d(32, 64, (3, 3), stride=1, padding=1)
-        self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-
-        self.linear1 = nn.Linear(64*8*8, 256)
-        self.linear1_bn = nn.BatchNorm1d(256)
-        self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(256, 149)
-
-        self.act = torch.relu
+        self.resnet_model = models.resnet152(pretrained=True)
+        n = 0
+        for child in self.resnet_model.children():
+            n += 1
+            if n < 8:
+                for param in child.parameters():
+                    param.requires_grad = False
+        self.features = nn.Sequential(*list(self.resnet_model.children())[:-1])
+        self.linear = nn.Linear(2048, 149)
 
     def forward(self, x):
-        x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
-        x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
-        x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
-        x = self.linear2(x)
+        x = self.features(x)
+        x = self.linear(x.view(len(x), -1))
         return x
 
 
@@ -99,17 +96,17 @@ torch.backends.cudnn.benchmark = False
 
 
 model = CNN().to(device)
-optimizer = optim.Adam(model.parameters(), lr=LR)
+optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9)
 criterion = nn.BCEWithLogitsLoss()
 
 
-train_data_loader = create_data_loader(TRAIN_IMG_DIR, TRAIN_INFO_PATH, BATCH_SIZE)
-val_data_loader = create_data_loader(VAL_IMG_DIR, VAL_INFO_PATH, batch_size=len(os.listdir(VAL_IMG_DIR)))
+train_data_loader = create_data_loader(TRAIN_INFO_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
+val_data_loader = create_data_loader(VAL_INFO_PATH, VAL_IMG_DIR, batch_size=BATCH_SIZE)
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
-    file.write("MODEL_NAME: {}, LR: {}, N_EPOCHS: {}, BATCH_SIZE: {}, DROPOUT: {} \n".format(MODEL_NAME, LR, N_EPOCHS,
-                                                                                             BATCH_SIZE, DROPOUT))
+    file.write("MODEL_NAME: {}, LR: {}, N_EPOCHS: {}, BATCH_SIZE: {} \n".format(MODEL_NAME, LR, N_EPOCHS,
+                                                                                BATCH_SIZE))
 
 
 # Define epoch status

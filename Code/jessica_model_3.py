@@ -51,32 +51,32 @@ class FashionDataset(Dataset):
 
 def create_data_loader(img_dir, info_csv_path, batch_size):
     """Returns a data loader for the model."""
-    img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BICUBIC),
+    img_transform = transforms.Compose([transforms.Resize((50, 50), interpolation=Image.BICUBIC),
                                         transforms.ToTensor()])
     img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
     loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
     return loader
 
 
-MODEL_NAME = "jessica_model_1"
-LR = 5e-3
-N_EPOCHS = 5
-BATCH_SIZE = 256
-DROPOUT = 0.10
+MODEL_NAME = "jessica_model_4"
+LR = 5e-5
+N_EPOCHS = 10
+BATCH_SIZE = 200
+DROPOUT = 0.01
 
 
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (3, 3), stride=1, padding=1)
-        self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
+        self.conv1 = nn.Conv2d(3, 35, (3, 3), stride=1, padding=1) # Output (n_examples, 32, 50, 50)
+        self.convnorm1 = nn.BatchNorm2d(35)
+        self.pool1 = nn.MaxPool2d((2, 2), stride=2) # Output (n_examples, 32, 25, 25)
 
-        self.conv2 = nn.Conv2d(32, 64, (3, 3), stride=1, padding=1)
-        self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+        self.conv2 = nn.Conv2d(35, 70, (3, 3), stride=1, padding=1) # Output (n_examples, 64, 25, 25)
+        self.convnorm2 = nn.BatchNorm2d(70)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 13, 13)
 
-        self.linear1 = nn.Linear(64*8*8, 256)
+        self.linear1 = nn.Linear(10080, 256) # Input will be flattened to (n_examples, 64, 8, 8)
         self.linear1_bn = nn.BatchNorm1d(256)
         self.drop = nn.Dropout(DROPOUT)
         self.linear2 = nn.Linear(256, 149)
