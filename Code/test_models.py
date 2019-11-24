@@ -56,6 +56,7 @@ def create_data_loader(data_path, img_dir, batch_size):
 
 
 MODEL_NAME = "mobilenet_model"
+MODEL_PATH = "/home/ubuntu/Final-Project-Group8/Models/mobilenet_model.pt"
 LR = 0.01
 N_EPOCHS = 3
 BATCH_SIZE = 64
@@ -88,7 +89,7 @@ torch.backends.cudnn.benchmark = False
 
 
 model = CNN()
-model.load_state_dict(torch.load("{}.pt".format(MODEL_NAME)))
+model.load_state_dict(torch.load("{}".format(MODEL_PATH)))
 model.eval()
 
 
