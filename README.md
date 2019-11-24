@@ -44,18 +44,8 @@ REMOVED FROM TRAIN UNCOMMON LABELS 161, 162, and 46
 This includes images: 
 
 ## TO DO
-1) Model architecture/tuning - Both (Mary has 2 baseline models)
-  a) Run best with image transformations
   
-2) For training, plot loss over epochs, class distribution plots - Jessica 😒
-  - Baseline, Pretrain (All)
-
-4) Pre-trained models - Both
-  a) Resnet50 
-  b) Densenet161
-  c) MobileNet
-  
-5) Parameter tables and network diagrams - Both 🤞🏻
-6) Presentation - Both
-7) Joint report - Both
-8) Web App - Both
+1) Parameter tables and network diagrams - Both 🤞🏻
+2) Presentation - Both
+3) Joint report - Both
+4) Web App - Both
