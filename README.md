@@ -15,6 +15,7 @@ source testenv/bin/activate
 pip3 install -r requirements.txt`
 
 **Third, install RISE:**
+
 [RISE](https://rise.readthedocs.io/en/maint-5.6/installation.html)
 
 ## Data
