@@ -58,9 +58,9 @@ def create_data_loader(img_dir, info_csv_path, batch_size):
     return data_loader
 
 
-MODEL_NAME = "jessica_model_3"
+MODEL_NAME = "jessica_model_5"
 LR = 5e-5
-N_EPOCHS = 10
+N_EPOCHS = 25
 BATCH_SIZE = 200
 DROPOUT = 0.01
 
