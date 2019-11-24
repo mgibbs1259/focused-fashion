@@ -33,7 +33,7 @@ class FashionDataset(Dataset):
         self.img_transform = img_transform
         self.info_csv_path = info_csv_path
         self.df = pd.read_csv(self.info_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
-        self.x_train = self.df['image_id'].apply(literal_eval)
+        self.x_train = self.df['image_id']
         self.mlb = MultiLabelBinarizer()
         self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
 
@@ -100,8 +100,8 @@ optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9)
 criterion = nn.BCEWithLogitsLoss()
 
 
-train_data_loader = create_data_loader(TRAIN_INFO_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
-val_data_loader = create_data_loader(VAL_INFO_PATH, VAL_IMG_DIR, batch_size=BATCH_SIZE)
+train_data_loader = create_data_loader(TRAIN_IMG_DIR, TRAIN_INFO_PATH, BATCH_SIZE)
+val_data_loader = create_data_loader(VAL_IMG_DIR, VAL_INFO_PATH, batch_size=BATCH_SIZE)
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:

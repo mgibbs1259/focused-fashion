@@ -29,7 +29,7 @@ class FashionDataset(Dataset):
         self.img_transform = img_transform
         self.info_csv_path = info_csv_path
         self.df = pd.read_csv(self.info_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
-        self.x_train = self.df['image_id'].apply(literal_eval)
+        self.x_train = self.df['image_id']
         self.mlb = MultiLabelBinarizer()
         self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
 
@@ -45,39 +45,45 @@ class FashionDataset(Dataset):
         return self.x_train.shape[0]
 
 
-def create_data_loader(data_path, img_dir, batch_size):
-    """Returns an image loader for the model."""
-    img_transform = transforms.Compose([transforms.Resize(256),
-                                        transforms.CenterCrop(224),
+def create_data_loader(img_dir, info_csv_path, batch_size):
+    """Returns a data loader for the model."""
+    img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BICUBIC),
                                         transforms.ToTensor()])
-    img_dataset = FashionDataset(data_path, img_dir, img_transform)
+    img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
     data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
     return data_loader
 
 
-MODEL_NAME = "mobilenet_model"
-MODEL_PATH = "/home/ubuntu/Final-Project-Group8/Models/mobilenet_model.pt"
-LR = 0.01
-N_EPOCHS = 3
-BATCH_SIZE = 64
+MODEL_NAME = "jessica_model_1"
+LR = 5e-3
+N_EPOCHS = 5
+BATCH_SIZE = 256
+DROPOUT = 0.10
 
 
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.mobile_model = models.mobilenet_v2(pretrained=True)
-        n = 0
-        for child in self.mobile_model.children():
-            n += 1
-            if n < 2:
-                for param in child.parameters():
-                    param.requires_grad = False
-        self.features = nn.Sequential(*list(self.mobile_model.children())[:-1])
-        self.linear = nn.Linear(62720, 149)
+        self.conv1 = nn.Conv2d(3, 32, (3, 3), stride=1, padding=1)
+        self.convnorm1 = nn.BatchNorm2d(32)
+        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
+
+        self.conv2 = nn.Conv2d(32, 64, (3, 3), stride=1, padding=1)
+        self.convnorm2 = nn.BatchNorm2d(64)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+
+        self.linear1 = nn.Linear(64*8*8, 256)
+        self.linear1_bn = nn.BatchNorm1d(256)
+        self.drop = nn.Dropout(DROPOUT)
+        self.linear2 = nn.Linear(256, 149)
+
+        self.act = torch.relu
 
     def forward(self, x):
-        x = self.features(x)
-        x = self.linear(x.view(len(x), -1))
+        x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
+        x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
+        x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
+        x = self.linear2(x)
         return x
 
 
@@ -89,11 +95,16 @@ torch.backends.cudnn.benchmark = False
 
 
 model = CNN()
-model.load_state_dict(torch.load("{}".format(MODEL_PATH)))
+model.load_state_dict(torch.load("/home/ubuntu/Final-Project-Group8/Models/{}.pt".format(MODEL_NAME),
+                                 map_location=torch.device("cpu")))
 model.eval()
 
 
-test_data_loader = create_data_loader(TEST_INFO_PATH, TEST_IMG_DIR, 1000)
+test_data_loader = create_data_loader(TEST_IMG_DIR, TEST_INFO_PATH, 500)
+
+
+with open("{}_test.txt".format(MODEL_NAME), "w") as file:
+    file.write("MODEL_NAME: {}".format(MODEL_NAME))
 
 
 with torch.no_grad():
@@ -105,8 +116,8 @@ with torch.no_grad():
         cpu_tar = tar.cpu().numpy()
         cpu_val_output = y_pred.cpu().numpy()
         f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
-        # Write to file
+        # Write test F1 to file
         with open("{}_test.txt".format(MODEL_NAME), "a") as file:
             file.write('Test F1 Score: {} \n'.format(f1))
-        # Print status
+        # Print test F1
         print('Test F1 Score: {}'.format(f1))

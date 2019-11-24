@@ -33,7 +33,7 @@ class FashionDataset(Dataset):
         self.img_transform = img_transform
         self.info_csv_path = info_csv_path
         self.df = pd.read_csv(self.info_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
-        self.x_train = self.df['image_id'].apply(literal_eval)
+        self.x_train = self.df['image_id']
         self.mlb = MultiLabelBinarizer()
         self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
 
@@ -50,12 +50,12 @@ class FashionDataset(Dataset):
 
 
 def create_data_loader(img_dir, info_csv_path, batch_size):
-     """Returns a data loader for the model."""
-     img_transform = transforms.Compose([transforms.Resize((120, 120), interpolation=Image.BICUBIC),
-                                         transforms.ToTensor()])
-     img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
-     data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
-     return data_loader
+    """Returns a data loader for the model."""
+    img_transform = transforms.Compose([transforms.Resize((120, 120), interpolation=Image.BICUBIC),
+                                        transforms.ToTensor()])
+    img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
+    data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+    return data_loader
 
 
 MODEL_NAME = "mary_model_2"
@@ -108,8 +108,8 @@ optimizer = optim.Adam(model.parameters(), lr=LR)
 criterion = nn.BCEWithLogitsLoss()
 
 
-train_data_loader = create_data_loader(TRAIN_INFO_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
-val_data_loader = create_data_loader(VAL_INFO_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
+train_data_loader = create_data_loader(TRAIN_IMG_DIR, TRAIN_INFO_PATH, BATCH_SIZE)
+val_data_loader = create_data_loader(VAL_IMG_DIR, VAL_INFO_PATH, batch_size=len(os.listdir(VAL_IMG_DIR)))
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:

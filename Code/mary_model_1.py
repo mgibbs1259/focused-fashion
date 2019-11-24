@@ -33,7 +33,7 @@ class FashionDataset(Dataset):
         self.img_transform = img_transform
         self.info_csv_path = info_csv_path
         self.df = pd.read_csv(self.info_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
-        self.x_train = self.df['image_id'].apply(literal_eval)
+        self.x_train = self.df['image_id']
         self.mlb = MultiLabelBinarizer()
         self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
 
@@ -50,12 +50,12 @@ class FashionDataset(Dataset):
 
 
 def create_data_loader(img_dir, info_csv_path, batch_size):
-     """Returns a data loader for the model."""
-     img_transform = transforms.Compose([transforms.Resize((100, 100), interpolation=Image.BICUBIC),
-                                         transforms.ToTensor()])
-     img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
-     data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
-     return data_loader
+    """Returns a data loader for the model."""
+    img_transform = transforms.Compose([transforms.Resize((100, 100), interpolation=Image.BICUBIC),
+                                        transforms.ToTensor()])
+    img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
+    data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+    return data_loader
 
 
 MODEL_NAME = "mary_model_1"
@@ -68,15 +68,15 @@ DROPOUT = 0.45
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (12, 12), stride=2, padding=1) # Output (n_examples, 32, 46, 46)
+        self.conv1 = nn.Conv2d(3, 32, (12, 12), stride=2, padding=1)
         self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2) # Output (n_examples, 32, 23, 23)
+        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
 
-        self.conv2 = nn.Conv2d(32, 64, (6, 6), stride=2, padding=1) # Output (n_examples, 64, 10, 10)
+        self.conv2 = nn.Conv2d(32, 64, (6, 6), stride=2, padding=1)
         self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2) # Output (n_examples, 64, 5, 5)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
 
-        self.linear1 = nn.Linear(64*5*5, 1024) # Input will be flattened to (n_examples, 64, 5, 5)
+        self.linear1 = nn.Linear(64*5*5, 1024)
         self.linear1_bn = nn.BatchNorm1d(1024)
         self.drop = nn.Dropout(DROPOUT)
         self.linear2 = nn.Linear(1024, 149)
@@ -103,8 +103,8 @@ optimizer = optim.Adam(model.parameters(), lr=LR)
 criterion = nn.BCEWithLogitsLoss()
 
 
-train_data_loader = create_data_loader(TRAIN_INFO_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
-val_data_loader = create_data_loader(VAL_INFO_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
+train_data_loader = create_data_loader(TRAIN_IMG_DIR, TRAIN_INFO_PATH, BATCH_SIZE)
+val_data_loader = create_data_loader(VAL_IMG_DIR, VAL_INFO_PATH, batch_size=len(os.listdir(VAL_IMG_DIR)))
 
 
 with open("{}.txt".format(MODEL_NAME), "w") as file:
