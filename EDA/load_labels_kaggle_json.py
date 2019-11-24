@@ -1,15 +1,13 @@
-import time
-script_start_time = time.time()
-from sklearn.preprocessing import MultiLabelBinarizer
 import pandas as pd
 import numpy as np
 import json
-import matplotlib.pyplot as plt
+import warnings
+
+from sklearn.preprocessing import MultiLabelBinarizer
 
 
 pd.set_option('display.max_rows', 600)
 pd.set_option('display.max_columns', 50)
-import warnings
 warnings.filterwarnings('ignore')
 
 data_path = "/home/ubuntu/Final-Project-Group8/Final-Project-Group8/Code/"
@@ -28,16 +26,17 @@ print('Train No. of images: %d'%(len(train['images'])))
 print('Test No. of images: %d'%(len(test['images'])))
 print('Validation No. of images: %d'%(len(validation['images'])))
 
+#Train
 train_img_url=train['images']
 train_img_url=pd.DataFrame(train_img_url)
 train_ann=train['annotations']
 train_ann=pd.DataFrame(train_ann)
 train=pd.merge(train_img_url, train_ann, on='imageId', how='inner')
 
-# train.to_csv("fulltrain_with_label")
-
+#Test
 test=pd.DataFrame(test['images'])
 
+#Validation
 val_img_url=validation['images']
 val_img_url=pd.DataFrame(val_img_url)
 val_ann=validation['annotations']
@@ -65,12 +64,10 @@ for data in datas.values():
     data['imageId'] = data['imageId'].astype(np.uint32)
 
 #write out val_ann and train_ann as csv
-#train_ann.to_csv("train_ann_NEW.csv")
-# val_ann.to_csv("validation.csv")
+# val_ann.to_csv("val_ann.csv")
 # test2.to_csv("test.csv")
 
-#convert to correct format
-
+#Convert labels using the multilabelbinarizer
 mlb = MultiLabelBinarizer()
 train_label = mlb.fit_transform(train['labelId'])
 validation_label = mlb.transform(validation['labelId'])
@@ -81,14 +78,7 @@ print(dummy_label_col)
 for data in [validation_label, train_label, test_label]:
     print(data.shape)
 
-# Save as numpy
-# dummy_label_col = pd.DataFrame(columns = dummy_label_col)
-# # dummy_label_col.to_csv('%s/dummy_label_col.csv'%'', index = False)
-# # np.save('%s/dummy_label_train.npy' % '', train_label)
-# # np.save('%s/dummy_label_val.npy' % '', validation_label)
-# dummy_label_col.head()
-
-# Save as csv if you prefer
+#Dataframes of the labels
 train_label = pd.DataFrame(data = train_label, columns = list(mlb.classes_))
 train_label.head()
 # train_label.to_csv("train_label")
@@ -98,14 +88,3 @@ validation_label.head()
 test_label = pd.DataFrame(data = validation_label, columns = list(mlb.classes_))
 test_label.head()
 # train_label.to_csv("test_label")
-
-
-total_count_test = test_label.sum()
-total_count_train = train_label.sum()
-total_count_validation = validation_label.sum()
-
-total_count_test.plot.bar()
-total_count_train.plot.bar()
-total_count_validation.plot.bar()
-
-plt.show()

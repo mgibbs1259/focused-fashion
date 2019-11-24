@@ -56,12 +56,11 @@ def save_images(image_urls, image_urls_type):
         i += 1
 
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument("--disable-notifications")
-driver = webdriver.Chrome(chrome_options=chrome_options)
-
-
-url_list = [
-    "https://bananarepublic.gap.com/browse/category.do?cid=69883&mlink=5001,,flyout_women_apparel_Dresses&clink=15682852"]
-image_urls = scrape_image_urls(driver, url_list)
-save_images(image_urls, "sweater")
+if __name__ == '__main__':
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--disable-notifications")
+    driver = webdriver.Chrome(chrome_options=chrome_options)
+    url_list = [
+        "https://bananarepublic.gap.com/browse/category.do?cid=69883&mlink=5001,,flyout_women_apparel_Dresses&clink=15682852"]
+    image_urls = scrape_image_urls(driver, url_list)
+    save_images(image_urls, "sweater")

@@ -1,33 +1,39 @@
 import os
-
+import tqdm
+import torch
 import numpy as np
 import pandas as pd
-import torch
 import torch.optim as optim
-import tqdm
+
+from torch import nn
 from PIL import Image
 from ast import literal_eval
 from torchvision import transforms
+from sklearn.metrics import f1_score
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
-from torch import nn
-from sklearn.metrics import f1_score
+
+
+TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/train"
+TRAIN_INFO_PATH = "/home/ubuntu/Final-Project-Group8/Data/train.csv"
+VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/validation"
+VAL_INFO_PATH = "/home/ubuntu/Final-Project-Group8/Data/validation.csv"
 
 
 class FashionDataset(Dataset):
     """A dataset for the fashion images and fashion image labels.
 
     Arguments:
-        Data csv path
         Image directory path
         Image transformation
+        Information csv path
     """
-    def __init__(self, data_csv_path, img_dir_path, img_transform):
-        self.data_csv_path = data_csv_path
+    def __init__(self, img_dir_path, img_transform, info_csv_path):
         self.img_dir_path = img_dir_path
         self.img_transform = img_transform
-        self.df = pd.read_csv(self.data_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
-        self.x_train = self.df['image_id']
+        self.info_csv_path = info_csv_path
+        self.df = pd.read_csv(self.info_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
+        self.x_train = self.df['image_id'].apply(literal_eval)
         self.mlb = MultiLabelBinarizer()
         self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
 
@@ -43,35 +49,20 @@ class FashionDataset(Dataset):
         return self.x_train.shape[0]
 
 
-def create_data_loader(data_path, img_dir, batch_size):
-     """Returns an image loader for the model."""
+def create_data_loader(img_dir, info_csv_path, batch_size):
+     """Returns a data loader for the model."""
      img_transform = transforms.Compose([transforms.Resize((100, 100), interpolation=Image.BICUBIC),
                                          transforms.ToTensor()])
-     dataset = FashionDataset(data_path, img_dir, img_transform)
-     loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
-     return loader
+     img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
+     data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+     return data_loader
 
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-np.random.seed(42)
-torch.manual_seed(42)
-torch.backends.cudnn.deterministic = True
-torch.backends.cudnn.benchmark = False
-
-
-# Change this
-MODEL_NAME = "model_number_1"
-
-
+MODEL_NAME = "mary_model_1"
 LR = 0.1
 N_EPOCHS = 5
 BATCH_SIZE = 1024
 DROPOUT = 0.45
-
-
-with open("{}.txt".format(MODEL_NAME), "w") as file:
-    file.write("MODEL_NAME: {}, LR: {}, N_EPOCHS: {}, BATCH_SIZE: {}, DROPOUT: {} \n".format(MODEL_NAME, LR, N_EPOCHS,
-                                                                                             BATCH_SIZE, DROPOUT))
 
 
 class CNN(nn.Module):
@@ -100,14 +91,11 @@ class CNN(nn.Module):
         return x
 
 
-TRAIN_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/train.csv"
-TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_train"
-train_data_loader = create_data_loader(TRAIN_DATA_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
-
-
-VAL_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/validation.csv"
-VAL_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_validation"
-val_data_loader = create_data_loader(VAL_DATA_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+np.random.seed(42)
+torch.manual_seed(42)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 
 model = CNN().to(device)
@@ -115,10 +103,19 @@ optimizer = optim.Adam(model.parameters(), lr=LR)
 criterion = nn.BCEWithLogitsLoss()
 
 
+train_data_loader = create_data_loader(TRAIN_INFO_PATH, TRAIN_IMG_DIR, BATCH_SIZE)
+val_data_loader = create_data_loader(VAL_INFO_PATH, VAL_IMG_DIR, batch_size=len(os.listdir(VAL_IMG_DIR)))
+
+
+with open("{}.txt".format(MODEL_NAME), "w") as file:
+    file.write("MODEL_NAME: {}, LR: {}, N_EPOCHS: {}, BATCH_SIZE: {}, DROPOUT: {} \n".format(MODEL_NAME, LR, N_EPOCHS,
+                                                                                             BATCH_SIZE, DROPOUT))
+
+
 # Define epoch status
 epoch_status = tqdm.tqdm(total=N_EPOCHS, desc='Epoch', position=0)
 for epoch in range(N_EPOCHS):
-    # Write to file
+    # Write model information to file
     with open("{}.txt".format(MODEL_NAME), "a") as file:
         file.write("EPOCH: {} \n".format(epoch))
     # Update epoch status
@@ -134,24 +131,26 @@ for epoch in range(N_EPOCHS):
         train_loss.backward()
         optimizer.step()
         loss_train += train_loss.item()
-        # Write to file
+        # Write train loss to file
         with open("{}.txt".format(MODEL_NAME), "a") as file:
             file.write('Batch Number: {}, Train Loss: {} \n'.format(train_idx, train_loss))
-        # Print status
+        # Print train loss
         print('Batch Number: {}, Train Loss: {}'.format(train_idx, train_loss))
     # Validation
     model.eval()
     with torch.no_grad():
         for val_idx, (feat, tar) in enumerate(val_data_loader):
             val_input, val_target = feat.to(device), tar.to(device)
-            val_output = model(val_input)
+            logit_val_output = model(val_input)
+            sigmoid_val_output = torch.sigmoid(logit_val_output)
+            y_pred = (sigmoid_val_output > 0.5).float()
             cpu_tar = tar.cpu().numpy()
-            cpu_val_output = np.where(val_output.cpu().numpy() > 0.5, 1, 0)
+            cpu_val_output = y_pred.cpu().numpy()
             f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
-            # Write to file
+            # Write validation F1 to file
             with open("{}.txt".format(MODEL_NAME), "a") as file:
                 file.write('Validation F1 Score: {} \n'.format(f1))
-            # Print status
+            # Print validation F1
             print('Validation F1 Score: {}'.format(f1))
     # Update epoch status
     epoch_status.update(1)

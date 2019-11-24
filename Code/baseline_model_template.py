@@ -107,6 +107,11 @@ train_data_loader = create_data_loader(TRAIN_INFO_PATH, TRAIN_IMG_DIR, BATCH_SIZ
 val_data_loader = create_data_loader(VAL_INFO_PATH, VAL_IMG_DIR, batch_size=1000)
 
 
+with open("{}.txt".format(MODEL_NAME), "w") as file:
+    file.write("MODEL_NAME: {}, LR: {}, N_EPOCHS: {}, BATCH_SIZE: {}, DROPOUT: {} \n".format(MODEL_NAME, LR, N_EPOCHS,
+                                                                                             BATCH_SIZE, DROPOUT))
+
+
 # Define epoch status
 epoch_status = tqdm.tqdm(total=N_EPOCHS, desc='Epoch', position=0)
 for epoch in range(N_EPOCHS):
