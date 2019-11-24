@@ -4,6 +4,8 @@
 
 **First, install the Chrome browser driver:**
 
+macOS
+
 `brew install chromedriver`
 
 **Second, create and activate a Python virtual environment:** 
@@ -13,6 +15,11 @@ source testenv/bin/activate
 pip3 install -r requirements.txt`
 
 ## Data
+All of the data for this project can be found on [Google Drive](https://drive.google.com/drive/folders/14YJngXIdbD-_D3qks1_uSd5Pnh2vfCad?usp=sharing). The data utilized comes from the [Kaggle](https://www.kaggle.com/c/imaterialist-challenge-fashion-2018) competition [iMaterialist Challenge (Fashion) at FGVC5](https://github.com/visipedia/imat_fashion_comp).
+
+## Summary
+
+## Sources
 https://github.com/visipedia/imat_fashion_comp
 https://www.kaggle.com/nlecoy/imaterialist-downloader-util
 
