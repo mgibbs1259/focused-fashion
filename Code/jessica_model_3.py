@@ -51,44 +51,14 @@ class FashionDataset(Dataset):
 
 def create_data_loader(img_dir, info_csv_path, batch_size):
     """Returns a data loader for the model."""
-    img_transform = transforms.Compose([transforms.Resize((32, 32), interpolation=Image.BICUBIC),
+    img_transform = transforms.Compose([transforms.Resize((50, 50), interpolation=Image.BICUBIC),
                                         transforms.ToTensor()])
     img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
     data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
     return data_loader
 
 
-MODEL_NAME = "jessica_model_1"
-LR = 5e-3
-N_EPOCHS = 5
-BATCH_SIZE = 256
-DROPOUT = 0.10
 
-
-class CNN(nn.Module):
-    def __init__(self):
-        super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 32, (3, 3), stride=1, padding=1)
-        self.convnorm1 = nn.BatchNorm2d(32)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
-
-        self.conv2 = nn.Conv2d(32, 64, (3, 3), stride=1, padding=1)
-        self.convnorm2 = nn.BatchNorm2d(64)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-
-        self.linear1 = nn.Linear(64*8*8, 256)
-        self.linear1_bn = nn.BatchNorm1d(256)
-        self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(256, 149)
-
-        self.act = torch.relu
-
-    def forward(self, x):
-        x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
-        x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
-        x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
-        x = self.linear2(x)
-        return x
 
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
