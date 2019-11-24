@@ -14,7 +14,9 @@ macOS
 source testenv/bin/activate
 pip3 install -r requirements.txt`
 
-**Third, install RISE:**
+**To view the presentation, install Jupyter and RISE:**
+
+[Jupyter](https://jupyter.org/install)
 
 [RISE](https://rise.readthedocs.io/en/maint-5.6/installation.html)
 
