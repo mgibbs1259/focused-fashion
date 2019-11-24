@@ -12,21 +12,24 @@ from sklearn.preprocessing import MultiLabelBinarizer
 from sklearn.metrics import f1_score
 
 
-# Load data
-class TestDataset(Dataset):
+TEST_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/test"
+TEST_INFO_PATH = "/home/ubuntu/Final-Project-Group8/Data/test.csv"
+
+
+class FashionDataset(Dataset):
     """A dataset for the fashion images and fashion image labels.
 
     Arguments:
-        Data csv path
         Image directory path
         Image transformation
+        Information csv path
     """
-    def __init__(self, data_csv_path, img_dir_path, img_transform):
-        self.data_csv_path = data_csv_path
+    def __init__(self, img_dir_path, img_transform, info_csv_path):
         self.img_dir_path = img_dir_path
         self.img_transform = img_transform
-        self.df = pd.read_csv(self.data_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
-        self.x_train = self.df['image_id']
+        self.info_csv_path = info_csv_path
+        self.df = pd.read_csv(self.info_csv_path, header=0, names=['label_id', 'image_id']).reset_index(drop=True)
+        self.x_train = self.df['image_id'].apply(literal_eval)
         self.mlb = MultiLabelBinarizer()
         self.y_train = self.mlb.fit_transform(self.df['label_id'].apply(literal_eval))
 
@@ -47,17 +50,17 @@ def create_data_loader(data_path, img_dir, batch_size):
     img_transform = transforms.Compose([transforms.Resize(256),
                                         transforms.CenterCrop(224),
                                         transforms.ToTensor()])
-    dataset = TestDataset(data_path, img_dir, img_transform)
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
-    return loader
+    img_dataset = FashionDataset(data_path, img_dir, img_transform)
+    data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
+    return data_loader
 
 
-TEST_DATA_PATH = "/home/ubuntu/Final-Project-Group8/Data/test.csv"
-TEST_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/output_test"
-test_data_loader = create_data_loader(TEST_DATA_PATH, TEST_IMG_DIR, batch_size=64)
+MODEL_NAME = "mobilenet_model"
+LR = 0.01
+N_EPOCHS = 3
+BATCH_SIZE = 64
 
 
-# Load model
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
@@ -77,12 +80,20 @@ class CNN(nn.Module):
         return x
 
 
-MODEL_NAME = "mobilenet_model"
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+np.random.seed(42)
+torch.manual_seed(42)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
+
 
 model = CNN()
 model.load_state_dict(torch.load("{}.pt".format(MODEL_NAME)))
 model.eval()
+
+
+test_data_loader = create_data_loader(TEST_INFO_PATH, TEST_IMG_DIR, 1000)
+
 
 with torch.no_grad():
     for idx, (feat, tar) in enumerate(test_data_loader):
@@ -90,15 +101,6 @@ with torch.no_grad():
         logit_test_output = model(test_input)
         sigmoid_test_output = torch.sigmoid(logit_test_output)
         y_pred = (sigmoid_test_output > 0.5).float()
-
-        bceloss = nn.BCELoss()
-        bceloss_output = bceloss(sigmoid_test_output, tar)
-        # Write to file
-        with open("{}_test.txt".format(MODEL_NAME), "a") as file:
-            file.write('Test BCELoss: {} \n'.format(bceloss_output))
-        # Print status
-        print('Test BCELoss: {}'.format(bceloss_output))
-
         cpu_tar = tar.cpu().numpy()
         cpu_val_output = y_pred.cpu().numpy()
         f1 = f1_score(cpu_tar, cpu_val_output, average='micro')
