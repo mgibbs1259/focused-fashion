@@ -148,7 +148,7 @@ with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as 
 store_item = AnnoyIndex(store_feature_maps.size()[1], 'dot')
 for i in range(store_feature_maps.size()[0]):
     store_item.add_item(i, store_feature_maps[i])
-store_item.build(150) # More trees gives higher precision when querying
+store_item.build(500) # More trees gives higher precision when querying
 store_item.save('store_items.ann')
 # Index example
 example_item = AnnoyIndex(example_feature_maps.size()[1], 'dot')
