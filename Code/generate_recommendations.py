@@ -11,7 +11,8 @@ from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 
 
-EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/blazer"
+EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/skirt"
+EXAMPLE_TYPE = "skirt"
 STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
 
 
@@ -25,8 +26,8 @@ def generate_image_mapping_csv(image_dir, csv_name):
 
 
 # Generate image mapping csv files
-generate_image_mapping_csv(EXAMPLE_DIR, "blazer_example_image")
-EXAMPLE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Data/blazer_example_image.csv"
+generate_image_mapping_csv(EXAMPLE_DIR, "{}_example_image".format(EXAMPLE_TYPE))
+EXAMPLE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Data/{}_example_image.csv".format(EXAMPLE_TYPE)
 generate_image_mapping_csv(STORE_DIR, "banana_republic_images")
 STORE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images.csv"
 
@@ -100,11 +101,11 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-MODEL_PATH = "/home/ubuntu/Final-Project-Group8/Models/mobilenet_model.pt"
+MODEL_NAME = "mobilenet_model"
 
 
 model = CNN().to(device)
-model.load_state_dict(torch.load(MODEL_PATH))
+model.load_state_dict(torch.load("/home/ubuntu/Final-Project-Group8/Models/{}.pt".format(MODEL_NAME)))
 model.eval()
 
 
@@ -125,16 +126,24 @@ with torch.no_grad():
 
 
 # Scikit-learn KNN
+with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "w") as file:
+    file.write("Model: {}, Example Type: {}, Scikit-learn KNN \n".format(MODEL_NAME, EXAMPLE_TYPE))
 rng = np.random.RandomState(42)
 tree = BallTree(store_feature_maps)
 dist, ind = tree.query(example_feature_maps, k=5)
 print(dist) # Distances to 5 closest neighbors
+with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
+    file.write("Distance to 5 closest neighbors: {} \n".format(dist))
 for i in ind:
     for idx in i:
         print(store_df['image_label'][idx])
+        with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
+            file.write("Recommendation: {} \n".format(store_df['image_label'][idx]))
 
 
 # Annoy KNN
+with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
+    file.write("Model: {}, Example Type: {}, Annoy KNN \n".format(MODEL_NAME, EXAMPLE_TYPE))
 # Index store
 store_item = AnnoyIndex(store_feature_maps.size()[1], 'dot')
 for i in range(store_feature_maps.size()[0]):
@@ -145,6 +154,11 @@ store_item.save('store_items.ann')
 example_item = AnnoyIndex(example_feature_maps.size()[1], 'dot')
 example_item.load('store_items.ann')
 recommendations = example_item.get_nns_by_item(0, 5)
-print(example_item.get_nns_by_item(0, 5, include_distances=True))
+dist_recommendations = example_item.get_nns_by_item(0, 5, include_distances=True)
+print(dist_recommendations)
+with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
+    file.write("Distance to 5 closest neighbors: {} \n".format(dist_recommendations))
 for recommendation in recommendations:
     print(store_df['image_label'][recommendation])
+    with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
+        file.write("Recommendation: {} \n".format(store_df['image_label'][recommendation]))
