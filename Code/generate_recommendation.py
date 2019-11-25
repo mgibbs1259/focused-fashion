@@ -15,6 +15,7 @@ EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/blazer"
 EXAMPLE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Code/blazer_example_image.csv"
 STORE_DIR = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images"
 STORE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images.csv"
+MODEL_PATH = "/home/ubuntu/Final-Project-Group8/Models/mobilenet_model.pt"
 
 
 def generate_image_mapping_csv(image_dir, csv_name):
@@ -103,7 +104,7 @@ def extract_feature_maps(data_loader, model):
 
 
 model = CNN()
-model.load_state_dict(torch.load("mobilenet_model.pt"))
+model.load_state_dict(torch.load(MODEL_PATH))
 model.eval()
 
 
