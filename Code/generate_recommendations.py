@@ -137,13 +137,13 @@ for i in ind:
 
 # Annoy KNN
 # Index store
-store_item = AnnoyIndex(store_feature_maps.size()[1], 'cosine')
+store_item = AnnoyIndex(store_feature_maps.size()[1], 'dot')
 for i in range(store_feature_maps.size()[0]):
     store_item.add_item(i, store_feature_maps[i])
 store_item.build(150) # More trees gives higher precision when querying
 store_item.save('store_items.ann')
 # Index example
-example_item = AnnoyIndex(example_feature_maps.size()[1], 'cosine')
+example_item = AnnoyIndex(example_feature_maps.size()[1], 'dot')
 example_item.load('store_items.ann')
 recommendations = example_item.get_nns_by_item(0, 5)
 print(example_item.get_nns_by_item(0, 5, include_distances=True))
