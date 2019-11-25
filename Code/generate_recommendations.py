@@ -52,7 +52,7 @@ class FashionDataset(Dataset):
         img = img.convert('RGB')
         if self.img_transform is not None:
             img = self.img_transform(img)
-        return img
+        return index, img
 
     def __len__(self):
         return self.img_id.shape[0]
@@ -110,16 +110,16 @@ model.eval()
 
 # Get example feature maps
 with torch.no_grad():
-    for train_idx, features in enumerate(example_loader):
-        feat = features.to(device)
+    for batch_idx, (img_idx, img_features) in enumerate(example_loader):
+        feat = img_features.to(device)
         x = model.features(feat)
         example_feature_maps = model.linear(x.view(len(x), -1))
 
 
 # Get store feature maps
 with torch.no_grad():
-    for train_idx, features in enumerate(store_loader):
-        feat = features.to(device)
+    for batch_idx, (img_idx, img_features) in enumerate(store_loader):
+        feat = img_features.to(device)
         x = model.features(feat)
         store_feature_maps = model.linear(x.view(len(x), -1))
 
@@ -128,7 +128,6 @@ with torch.no_grad():
 rng = np.random.RandomState(42)
 tree = BallTree(store_feature_maps)
 dist, ind = tree.query(example_feature_maps, k=5)
-print(ind) # Indices of 5 closest neighbors
 print(dist) # Distances to 5 closest neighbors
 for i in ind:
     for idx in i:
