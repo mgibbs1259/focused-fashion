@@ -12,10 +12,7 @@ from torch.utils.data import Dataset, DataLoader
 
 
 EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/blazer"
-EXAMPLE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Code/blazer_example_image.csv"
 STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
-STORE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images.csv"
-MODEL_PATH = "/home/ubuntu/Final-Project-Group8/Models/mobilenet_model.pt"
 
 
 def generate_image_mapping_csv(image_dir, csv_name):
@@ -24,27 +21,29 @@ def generate_image_mapping_csv(image_dir, csv_name):
     image_label = os.listdir(image_dir)
     image_dict = {"image_id": image_id, "image_label": image_label}
     image_df = pd.DataFrame(image_dict)
-    image_df.to_csv("{}.csv".format(csv_name))
+    image_df.to_csv("/home/ubuntu/Final-Project-Group8/Data/{}.csv".format(csv_name))
 
 
 # Generate image mapping csv files
 generate_image_mapping_csv(EXAMPLE_DIR, "blazer_example_image")
+EXAMPLE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Data/blazer_example_image.csv"
 generate_image_mapping_csv(STORE_DIR, "banana_republic_images")
+STORE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images.csv"
 
 
 class FashionDataset(Dataset):
     """A dataset for the fashion images and fashion image labels.
 
     Arguments:
-        Data csv path
         Image directory path
         Image transformation
+        Information csv path
     """
-    def __init__(self, img_dir_path, img_transform, data_csv_path):
-        self.data_csv_path = data_csv_path
+    def __init__(self, img_dir_path, img_transform, info_csv_path):
         self.img_dir_path = img_dir_path
         self.img_transform = img_transform
-        self.df = pd.read_csv(self.data_csv_path).reset_index(drop=True)
+        self.info_csv_path = info_csv_path
+        self.df = pd.read_csv(self.info_csv_path, header=0).reset_index(drop=True)
         self.img_id = self.df['image_id']
         self.img_label = self.df['image_label']
 
@@ -71,7 +70,7 @@ def create_data_loader(img_dir, info_csv_path, batch_size):
 
 # Create data loader
 example_loader = create_data_loader(EXAMPLE_DIR, EXAMPLE_CSV_PATH, batch_size=1)
-store_loader = create_data_loader(STORE_DIR, STORE_CSV_PATH, batch_size=64)
+store_loader = create_data_loader(STORE_DIR, STORE_CSV_PATH, batch_size=500)
 store_df = pd.read_csv(STORE_CSV_PATH)
 
 
@@ -101,7 +100,10 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-model = CNN()
+MODEL_PATH = "/home/ubuntu/Final-Project-Group8/Models/mobilenet_model.pt"
+
+
+model = CNN().to(device)
 model.load_state_dict(torch.load(MODEL_PATH))
 model.eval()
 
@@ -135,13 +137,13 @@ for i in ind:
 
 # Annoy KNN
 # Index store
-store_item = AnnoyIndex(store_feature_maps.size()[1], 'dot')
+store_item = AnnoyIndex(store_feature_maps.size()[1], 'cosine')
 for i in range(store_feature_maps.size()[0]):
     store_item.add_item(i, store_feature_maps[i])
 store_item.build(150) # More trees gives higher precision when querying
 store_item.save('store_items.ann')
 # Index example
-example_item = AnnoyIndex(example_feature_maps.size()[1], 'dot')
+example_item = AnnoyIndex(example_feature_maps.size()[1], 'cosine')
 example_item.load('store_items.ann')
 recommendations = example_item.get_nns_by_item(0, 5)
 print(example_item.get_nns_by_item(0, 5, include_distances=True))
