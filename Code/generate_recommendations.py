@@ -13,7 +13,7 @@ from torch.utils.data import Dataset, DataLoader
 
 EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/blazer"
 EXAMPLE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Code/blazer_example_image.csv"
-STORE_DIR = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images"
+STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
 STORE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Code/banana_republic_images.csv"
 MODEL_PATH = "/home/ubuntu/Final-Project-Group8/Models/mobilenet_model.pt"
 
@@ -44,7 +44,7 @@ class FashionDataset(Dataset):
         self.data_csv_path = data_csv_path
         self.img_dir_path = img_dir_path
         self.img_transform = img_transform
-        self.df = pd.read_csv(self.data_csv_path, header=0).reset_index(drop=True)
+        self.df = pd.read_csv(self.data_csv_path).reset_index(drop=True)
         self.img_id = self.df['image_id']
         self.img_label = self.df['image_label']
 
@@ -94,13 +94,11 @@ class CNN(nn.Module):
         return x
 
 
-def extract_feature_maps(data_loader, model):
-    """Extract the feature maps from the given model."""
-    with torch.no_grad():
-        for train_idx, features in enumerate(data_loader):
-            x = model.features(features)
-            feature_maps = model.linear(x)
-            return feature_maps
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+np.random.seed(42)
+torch.manual_seed(42)
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 
 model = CNN()
@@ -108,9 +106,18 @@ model.load_state_dict(torch.load(MODEL_PATH))
 model.eval()
 
 
-# Get feature maps
-example_feature_maps = extract_feature_maps(example_loader, model)
-store_feature_maps = example_feature_maps(store_loader, model)
+# Get example feature maps
+with torch.no_grad():
+    for train_idx, features in enumerate(example_loader):
+        feat = features.to(device)
+        x = model.features(feat)
+        example_feature_maps = model.linear(x.view(len(x), -1))
+# Get store feature maps
+with torch.no_grad():
+    for train_idx, features in enumerate(store_loader):
+        feat = features.to(device)
+        x = model.features(feat)
+        store_feature_maps = model.linear(x.view(len(x), -1))
 
 
 # Scikit-learn KNN
@@ -126,13 +133,13 @@ for i in ind:
 
 # Annoy KNN
 # Index store
-store_item = AnnoyIndex(store_feature_maps.size()[1], 'cosine')
+store_item = AnnoyIndex(store_feature_maps.size()[1], 'dot')
 for i in range(store_feature_maps.size()[0]):
     store_item.add_item(i, store_feature_maps[i])
 store_item.build(150) # More trees gives higher precision when querying
 store_item.save('store_items.ann')
 # Index example
-example_item = AnnoyIndex(example_feature_maps.size()[1], 'cosine')
+example_item = AnnoyIndex(example_feature_maps.size()[1], 'dot')
 example_item.load('store_items.ann')
 recommendations = example_item.get_nns_by_item(0, 5)
 print(example_item.get_nns_by_item(0, 5, include_distances=True))
