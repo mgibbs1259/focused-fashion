@@ -113,22 +113,6 @@ example_feature_maps = extract_feature_maps(example_loader, model)
 store_feature_maps = example_feature_maps(store_loader, model)
 
 
-# Annoy KNN
-# Index store
-store_item = AnnoyIndex(store_feature_maps.size()[1], 'dot')
-for i in range(store_feature_maps.size()[0]):
-    store_item.add_item(i, store_feature_maps[i])
-store_item.build(150) # More trees gives higher precision when querying
-store_item.save('store_items.ann')
-# Index example
-example_item = AnnoyIndex(example_feature_maps.size()[1], 'dot')
-example_item.load('store_items.ann')
-recommendations = example_item.get_nns_by_item(0, 5)
-print(example_item.get_nns_by_item(0, 5, include_distances=True))
-for recommendation in recommendations:
-    print(store_df['image_label'][recommendation])
-
-
 # Scikit-learn KNN
 rng = np.random.RandomState(42)
 tree = BallTree(store_feature_maps)
@@ -138,3 +122,19 @@ print(dist) # Distances to 5 closest neighbors
 for i in ind:
     for idx in i:
         print(store_df['image_label'][idx])
+
+
+# Annoy KNN
+# Index store
+store_item = AnnoyIndex(store_feature_maps.size()[1], 'cosine')
+for i in range(store_feature_maps.size()[0]):
+    store_item.add_item(i, store_feature_maps[i])
+store_item.build(150) # More trees gives higher precision when querying
+store_item.save('store_items.ann')
+# Index example
+example_item = AnnoyIndex(example_feature_maps.size()[1], 'cosine')
+example_item.load('store_items.ann')
+recommendations = example_item.get_nns_by_item(0, 5)
+print(example_item.get_nns_by_item(0, 5, include_distances=True))
+for recommendation in recommendations:
+    print(store_df['image_label'][recommendation])
