@@ -112,6 +112,8 @@ with torch.no_grad():
         feat = features.to(device)
         x = model.features(feat)
         example_feature_maps = model.linear(x.view(len(x), -1))
+
+
 # Get store feature maps
 with torch.no_grad():
     for train_idx, features in enumerate(store_loader):
