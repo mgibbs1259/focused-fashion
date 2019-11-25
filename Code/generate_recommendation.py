@@ -113,7 +113,7 @@ example_feature_maps = extract_feature_maps(example_loader, model)
 store_feature_maps = example_feature_maps(store_loader, model)
 
 
-# Approximate KNN
+# Annoy KNN
 # Index store
 store_item = AnnoyIndex(store_feature_maps.size()[1], 'dot')
 for i in range(store_feature_maps.size()[0]):
