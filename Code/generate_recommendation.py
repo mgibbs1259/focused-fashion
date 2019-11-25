@@ -121,7 +121,7 @@ store_item.build(150) # More trees gives higher precision when querying
 store_item.save('store_items.ann')
 # Index example
 example_item = AnnoyIndex(example_feature_maps.size()[1], 'dot')
-example_item.load('store.ann')
+example_item.load('store_items.ann')
 recommendations = example_item.get_nns_by_item(0, 5)
 print(example_item.get_nns_by_item(0, 5, include_distances=True))
 for recommendation in recommendations:
