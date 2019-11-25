@@ -1,9 +1,21 @@
-import pandas as pd
-import numpy as np
+import os
 import json
 import warnings
 
+import numpy as np
+import pandas as pd
 from sklearn.preprocessing import MultiLabelBinarizer
+
+
+def check_label_balance(image_dir_path, image_info_path):
+    """Prints False if there are missing images from the csv files."""
+    images = []
+    images += [each for each in os.listdir(image_dir_path)]
+    images.sort()
+    df = pd.read_csv(image_info_path)
+    df['file name'] = df['imageId'].apply(lambda x: '{}.jpg'.format(x))
+    mask = df['file name'].isin(images)
+    return print(mask.value_counts())
 
 
 pd.set_option('display.max_rows', 600)

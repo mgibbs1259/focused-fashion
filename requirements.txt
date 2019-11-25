@@ -233,5 +233,6 @@ websocket-client==0.56.0
 Werkzeug==0.16.0
 whichcraft==0.6.1
 widgetsnbextension==3.5.1
+wordcloud==1.6.0
 wrapt==1.11.2
 zipp==0.6.0
