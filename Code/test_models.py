@@ -47,43 +47,36 @@ class FashionDataset(Dataset):
 
 def create_data_loader(img_dir, info_csv_path, batch_size):
     """Returns a data loader for the model."""
-    img_transform = transforms.Compose([transforms.Resize((50, 50), interpolation=Image.BICUBIC),
+    img_transform = transforms.Compose([transforms.Resize(256),
+                                        transforms.CenterCrop(224),
                                         transforms.ToTensor()])
     img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
     data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
     return data_loader
 
 
-MODEL_NAME = "jessica_model_4"
-LR = 5e-7
-N_EPOCHS = 10
-BATCH_SIZE = 280
-DROPOUT = 0.005
+MODEL_NAME = "resnet152_model"
+LR = 0.01
+N_EPOCHS = 3
+BATCH_SIZE = 64
 
 
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(3, 35, (3, 3), stride=1, padding=1)
-        self.convnorm1 = nn.BatchNorm2d(35)
-        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
-
-        self.conv2 = nn.Conv2d(35, 70, (3, 3), stride=1, padding=1)
-        self.convnorm2 = nn.BatchNorm2d(70)
-        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-
-        self.linear1 = nn.Linear(10080, 256)
-        self.linear1_bn = nn.BatchNorm1d(256)
-        self.drop = nn.Dropout(DROPOUT)
-        self.linear2 = nn.Linear(256, 149)
-
-        self.act = torch.relu
+        self.resnet_model = models.resnet152(pretrained=True)
+        n = 0
+        for child in self.resnet_model.children():
+            n += 1
+            if n < 8:
+                for param in child.parameters():
+                    param.requires_grad = False
+        self.features = nn.Sequential(*list(self.resnet_model.children())[:-1])
+        self.linear = nn.Linear(2048, 149)
 
     def forward(self, x):
-        x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
-        x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
-        x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
-        x = self.linear2(x)
+        x = self.features(x)
+        x = self.linear(x.view(len(x), -1))
         return x
 
 
@@ -95,8 +88,7 @@ torch.backends.cudnn.benchmark = False
 
 
 model = CNN()
-model.load_state_dict(torch.load("/home/ubuntu/Final-Project-Group8/Models/{}.pt".format(MODEL_NAME),
-                                 map_location=torch.device("cpu")))
+model.load_state_dict(torch.load("/home/ubuntu/Final-Project-Group8/Models/{}.pt".format(MODEL_NAME)))
 model.eval()
 
 
