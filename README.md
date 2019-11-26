@@ -29,8 +29,6 @@ All of the data for this project can be found on [Google Drive](https://drive.go
 https://github.com/visipedia/imat_fashion_comp
 https://www.kaggle.com/nlecoy/imaterialist-downloader-util
 
-Dealing with multilabel in pytorch
-MultiLabelBinarizer
 https://www.kaggle.com/anqitu/for-starter-json-to-multilabel-in-24-seconds
 https://stackoverflow.com/questions/52855843/multi-label-classification-in-pytorch
 https://www.analyticsvidhya.com/blog/2019/04/build-first-multi-label-image-classification-model-python/
@@ -45,9 +43,6 @@ https://towardsdatascience.com/simple-implementation-of-densely-connected-convol
 
 https://github.com/spotify/annoy
 https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
-
-REMOVED FROM TRAIN UNCOMMON LABELS 161, 162, and 46
-This includes images: 
 
 ## TO DO
   
