@@ -9,8 +9,8 @@ from sklearn.neighbors import BallTree
 from torch.utils.data import Dataset, DataLoader
 
 
-EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/skirt"
-EXAMPLE_TYPE = "skirt"
+EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/top"
+EXAMPLE_TYPE = "top"
 STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
 
 
