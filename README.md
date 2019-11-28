@@ -27,7 +27,7 @@ All of the data for this project can be found on [Google Drive](https://drive.go
 
 ## Summary
 
-## Sources
+## References
 https://github.com/visipedia/imat_fashion_comp
 https://www.kaggle.com/nlecoy/imaterialist-downloader-util
 
