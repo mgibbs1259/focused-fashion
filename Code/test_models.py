@@ -64,14 +64,14 @@ BATCH_SIZE = 64
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.mobile_model = models.mobilenet_v2(pretrained=True)
+        self.mobilenet_model = models.mobilenet_v2(pretrained=True)
         n = 0
-        for child in self.mobile_model.children():
+        for child in self.mobilenet_model.children():
             n += 1
             if n < 2:
                 for param in child.parameters():
                     param.requires_grad = False
-        self.features = nn.Sequential(*list(self.mobile_model.children())[:-1])
+        self.features = nn.Sequential(*list(self.mobilenet_model.children())[:-1])
         self.linear = nn.Linear(62720, 149)
 
     def forward(self, x):

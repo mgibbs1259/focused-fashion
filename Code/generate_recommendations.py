@@ -11,8 +11,8 @@ from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 
 
-EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/jessica"
-EXAMPLE_TYPE = "jessica"
+EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/skirt"
+EXAMPLE_TYPE = "skirt"
 STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
 
 
@@ -61,8 +61,7 @@ class FashionDataset(Dataset):
 
 def create_data_loader(img_dir, info_csv_path, batch_size):
      """Returns an image loader for the model."""
-     img_transform = transforms.Compose([transforms.Resize(256),
-                                         transforms.CenterCrop(224),
+     img_transform = transforms.Compose([transforms.Resize((50, 50), interpolation=Image.BICUBIC),
                                          transforms.ToTensor()])
      img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
      data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
@@ -75,22 +74,32 @@ store_loader = create_data_loader(STORE_DIR, STORE_CSV_PATH, batch_size=500)
 store_df = pd.read_csv(STORE_CSV_PATH)
 
 
+DROPOUT = 0.01
+
+
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__()
-        self.mobile_model = models.mobilenet_v2(pretrained=True)
-        n = 0
-        for child in self.mobile_model.children():
-            n += 1
-            if n < 2:
-                for param in child.parameters():
-                    param.requires_grad = False
-        self.features = nn.Sequential(*list(self.mobile_model.children())[:-1])
-        self.linear = nn.Linear(62720, 149)
+        self.conv1 = nn.Conv2d(3, 35, (3, 3), stride=1, padding=1)
+        self.convnorm1 = nn.BatchNorm2d(35)
+        self.pool1 = nn.MaxPool2d((2, 2), stride=2)
+
+        self.conv2 = nn.Conv2d(35, 70, (3, 3), stride=1, padding=1)
+        self.convnorm2 = nn.BatchNorm2d(70)
+        self.pool2 = nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+
+        self.linear1 = nn.Linear(10080, 256)
+        self.linear1_bn = nn.BatchNorm1d(256)
+        self.drop = nn.Dropout(DROPOUT)
+        self.linear2 = nn.Linear(256, 149)
+
+        self.act = torch.relu
 
     def forward(self, x):
-        x = self.features(x)
-        x = self.linear(x.view(len(x), -1))
+        x = self.pool1(self.convnorm1(self.act(self.conv1(x))))
+        x = self.pool2(self.convnorm2(self.act(self.conv2(x))))
+        x = self.drop(self.linear1_bn(self.act(self.linear1(x.view(len(x), -1)))))
+        x = self.linear2(x)
         return x
 
 
@@ -101,11 +110,12 @@ torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 
 
-MODEL_NAME = "mobilenet_model"
+MODEL_NAME = "jessica_model_5"
 
 
 model = CNN().to(device)
-model.load_state_dict(torch.load("/home/ubuntu/Final-Project-Group8/Models/{}.pt".format(MODEL_NAME)))
+model.load_state_dict(torch.load("/home/ubuntu/Final-Project-Group8/Models/{}.pt".format(MODEL_NAME),
+                                 map_location=torch.device("cpu")))
 model.eval()
 
 
@@ -113,16 +123,22 @@ model.eval()
 with torch.no_grad():
     for batch_idx, (img_idx, img_features) in enumerate(example_loader):
         feat = img_features.to(device)
-        x = model.features(feat)
-        example_feature_maps = model.linear(x.view(len(x), -1))
+        x = model.pool1(model.convnorm1(model.act(model.conv1(feat))))
+        x = model.pool2(model.convnorm2(model.act(model.conv2(x))))
+        x = model.drop(model.linear1_bn(model.act(model.linear1(x.view(len(x), -1)))))
+        x = model.linear2(x)
+        example_feature_maps = x
 
 
 # Get store feature maps
 with torch.no_grad():
     for batch_idx, (img_idx, img_features) in enumerate(store_loader):
         feat = img_features.to(device)
-        x = model.features(feat)
-        store_feature_maps = model.linear(x.view(len(x), -1))
+        x = model.pool1(model.convnorm1(model.act(model.conv1(feat))))
+        x = model.pool2(model.convnorm2(model.act(model.conv2(x))))
+        x = model.drop(model.linear1_bn(model.act(model.linear1(x.view(len(x), -1)))))
+        x = model.linear2(x)
+        store_feature_maps = x
 
 
 # Scikit-learn KNN
