@@ -9,8 +9,8 @@ from sklearn.neighbors import BallTree
 from torch.utils.data import Dataset, DataLoader
 
 
-EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/blazer"
-EXAMPLE_TYPE = "blazer"
+EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/skirt"
+EXAMPLE_TYPE = "skirt"
 STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
 
 
@@ -105,13 +105,13 @@ for i in ind:
 with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
     file.write("Model: {}, Example Type: {}, Annoy KNN \n".format(MODEL_NAME, EXAMPLE_TYPE))
 # Index store
-store_item = AnnoyIndex(store_feature_maps.size()[1], 'angular')
-for i in range(store_feature_maps.size()[0]):
-    store_item.add_item(i, store_feature_maps[i])
+store_item = AnnoyIndex(store_images.size()[1], 'angular')
+for i in range(store_images.size()[0]):
+    store_item.add_item(i, store_images[i])
 store_item.build(500) # More trees gives higher precision when querying
 store_item.save('store_items.ann')
 # Index example
-example_item = AnnoyIndex(example_feature_maps.size()[1], 'angular')
+example_item = AnnoyIndex(example_image.size()[1], 'angular')
 example_item.load('store_items.ann')
 recommendations = example_item.get_nns_by_item(0, 5)
 dist_recommendations = example_item.get_nns_by_item(0, 5, include_distances=True)
