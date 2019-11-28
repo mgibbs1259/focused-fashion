@@ -57,8 +57,7 @@ def create_data_loader(img_dir, info_csv_path, batch_size):
                                         transforms.RandomVerticalFlip(),
                                         transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3),
                                         transforms.CenterCrop(224),
-                                        transforms.ToTensor(),
-                                        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])])
+                                        transforms.ToTensor()])
     img_dataset = FashionDataset(img_dir, img_transform, info_csv_path)
     data_loader = DataLoader(img_dataset, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
     return data_loader
