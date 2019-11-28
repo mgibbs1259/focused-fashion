@@ -8,8 +8,8 @@ from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 
 
-EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/skirt"
-EXAMPLE_TYPE = "skirt"
+EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/blazer"
+EXAMPLE_TYPE = "blazer"
 STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
 
 
@@ -50,6 +50,7 @@ class FashionDataset(Dataset):
         img = img.convert('RGB')
         if self.img_transform is not None:
             img = self.img_transform(img)
+        img = np.asarray(img)
         return index, img
 
     def __len__(self):
@@ -71,12 +72,12 @@ store_df = pd.read_csv(STORE_CSV_PATH)
 
 
 np.random.seed(42)
-MODEL_NAME = "baseline_recommendations"
+MODEL_NAME = "baseline"
 
 
 # Get example flattened images
 for batch_idx, (img_idx, img_features) in enumerate(example_loader):
-    example_images = img_features.reshape((img_features.shape[0], -1))
+    example_image = img_features.reshape((img_features.shape[0], -1))
 
 
 # Get store flattened images
@@ -88,7 +89,7 @@ for batch_idx, (img_idx, img_features) in enumerate(store_loader):
 with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "w") as file:
     file.write("Model: {}, Example Type: {}, Scikit-learn KNN \n".format(MODEL_NAME, EXAMPLE_TYPE))
 tree = BallTree(store_images)
-dist, ind = tree.query(example_images, k=5)
+dist, ind = tree.query(example_image, k=5)
 print(dist) # Distances to 5 closest neighbors
 with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
     file.write("Distance to 5 closest neighbors: {} \n".format(dist))
