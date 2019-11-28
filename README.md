@@ -49,4 +49,3 @@ https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.htm
 1) Parameter tables and network diagrams - Both 🤞🏻
 2) Presentation - Both
 3) Joint report - Both
-4) Web App - Both
