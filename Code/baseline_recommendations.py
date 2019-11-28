@@ -3,8 +3,9 @@ import os
 import numpy as np
 import pandas as pd
 from PIL import Image
+from annoy import AnnoyIndex
+from torchvision import transforms
 from sklearn.neighbors import BallTree
-from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 
 
@@ -98,3 +99,26 @@ for i in ind:
         print(store_df['image_label'][idx])
         with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
             file.write("Recommendation: {} \n".format(store_df['image_label'][idx]))
+
+
+# Annoy KNN
+with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
+    file.write("Model: {}, Example Type: {}, Annoy KNN \n".format(MODEL_NAME, EXAMPLE_TYPE))
+# Index store
+store_item = AnnoyIndex(store_feature_maps.size()[1], 'angular')
+for i in range(store_feature_maps.size()[0]):
+    store_item.add_item(i, store_feature_maps[i])
+store_item.build(500) # More trees gives higher precision when querying
+store_item.save('store_items.ann')
+# Index example
+example_item = AnnoyIndex(example_feature_maps.size()[1], 'angular')
+example_item.load('store_items.ann')
+recommendations = example_item.get_nns_by_item(0, 5)
+dist_recommendations = example_item.get_nns_by_item(0, 5, include_distances=True)
+print(dist_recommendations)
+with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
+    file.write("Distance to 5 closest neighbors: {} \n".format(dist_recommendations))
+for recommendation in recommendations:
+    print(store_df['image_label'][recommendation])
+    with open("{}_{}_recommendations.txt".format(MODEL_NAME, EXAMPLE_TYPE), "a") as file:
+        file.write("Recommendation: {} \n".format(store_df['image_label'][recommendation]))
