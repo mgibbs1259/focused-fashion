@@ -64,7 +64,7 @@ def create_data_loader(img_dir, info_csv_path, batch_size):
     return data_loader
 
 
-MODEL_NAME = "resnet152_model"
+MODEL_NAME = "densenet161_model"
 LR = 0.01
 N_EPOCHS = 3
 BATCH_SIZE = 64
