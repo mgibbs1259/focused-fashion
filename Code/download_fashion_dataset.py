@@ -19,6 +19,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 TRAIN_JSON = "/home/ubuntu/Final-Project-Group8/Data/train.json"
 TRAIN_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/train"
+# Change to the validation.json for the validation set
 
 
 def parse_dataset(_dataset, _outdir):
@@ -31,6 +32,8 @@ def parse_dataset(_dataset, _outdir):
             fname = os.path.join(_outdir, "{}.jpg".format(image["imageId"]))
             _fnames_urls.append((fname, url))
     return _fnames_urls[:500000]
+# [:500000] is for the training set
+# Change this to [700000:730000] for the test set
 
 
 def download_image(fnames_and_urls):
