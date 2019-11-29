@@ -32,10 +32,6 @@ We all have our favorite pieces of clothing that we consistently wear. Over time
 We built a deep learning-based fashion recommendation system. Our solution involves a two-step approach. Our solution involves a two-step approach. First, we train a convolutional neural network on fashion images in order to extract the feature maps associated with different clothing items. Second, we use the feature maps as input to a KNN model that will find the five closest neighbors to a given query image that will serve as recommendations.
 #### Recommendations
 ![Jeans Recommendations](https://github.com/mgibbs1259/Final-Project-Group8/blob/master/Final-Group-Presentation/final-group-presentation/jeans_recommendations.png)
-<br>
-![Skirt Recommendations](https://github.com/mgibbs1259/Final-Project-Group8/blob/master/Final-Group-Presentation/final-group-presentation/skirt_recommendations.png)
-<br>
-![Jessica Recommendations](https://github.com/mgibbs1259/Final-Project-Group8/blob/master/Final-Group-Presentation/final-group-presentation/jessica_recommendations.png)
 
 ## References
 https://github.com/visipedia/imat_fashion_comp
