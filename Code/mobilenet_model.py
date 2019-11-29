@@ -1,10 +1,10 @@
 import os
+
 import tqdm
 import torch
 import numpy as np
 import pandas as pd
 import torch.optim as optim
-
 from torch import nn
 from PIL import Image
 from ast import literal_eval

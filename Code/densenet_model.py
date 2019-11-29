@@ -6,10 +6,10 @@ import pandas as pd
 from torch import nn
 from PIL import Image
 from ast import literal_eval
+from sklearn.metrics import f1_score
 from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 from sklearn.preprocessing import MultiLabelBinarizer
-from sklearn.metrics import f1_score
 
 
 TEST_IMG_DIR = "/home/ubuntu/Final-Project-Group8/Data/test"

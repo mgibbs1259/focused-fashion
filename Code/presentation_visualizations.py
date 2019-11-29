@@ -1,12 +1,12 @@
 import pandas as pd
-from ast import literal_eval
 import matplotlib.pyplot as plt
+from ast import literal_eval
 from wordcloud import WordCloud
 from sklearn.preprocessing import MultiLabelBinarizer
 
 
 #Load Data
-df_txt = pd.read_csv('new_model_number_6.txt', header = None)
+df_txt = pd.read_csv('new_model_number_6.txt', header=None)
 df1 = pd.read_csv("train_ann_drop.csv")
 label_map = pd.read_csv("label_map.csv")
 
@@ -89,8 +89,24 @@ def create_cloud(mergeddf):
     plt.show()
 
 
+def F1_hist(df):
+    df_txt = df.rename(columns={0: "F1"})
+    F1 = df_txt[['x','F1']] = df_txt['F1'].str.split(':', expand=True)
+    df_txt = df_txt.drop(['x'], axis=1)
+    df_txt["F1"] = pd.to_numeric(df_txt["F1"])
+    x = df_txt.describe()
+    df_txt.plot.box()
+    plt.title('F1 scores')
+    plt.ylabel('Score')
+    plt.title("F1 Box Plot")
+    plt.show
+    plt.savefig("box_plot_f1_model_MobileNet")
+    return x
+
+
 clean_txt_file("model_number_6.txt", "new_model_number_6.txt")
 plot_loss(df_txt)
 explore_labels(df1)
 mergeddf = prep_data_for_cloud(df1, label_map)
 create_cloud(mergeddf)
+F1_hist(df_txt)

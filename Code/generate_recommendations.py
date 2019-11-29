@@ -11,8 +11,8 @@ from torchvision import transforms, models
 from torch.utils.data import Dataset, DataLoader
 
 
-EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/top"
-EXAMPLE_TYPE = "top"
+EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/jeans"
+EXAMPLE_TYPE = "jeans"
 STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
 
 
