@@ -28,7 +28,7 @@ All of the data for this project can be found on [Google Drive](https://drive.go
 
 2) Download data:
 
-***Disclaimer - it takes ~6 hours to download the fashion dataset***
+- ***Disclaimer - it takes ~6 hours to download the fashion dataset***
 
 - download_fashion_dataset.py - used to download the fashion images from fashion image urls
 - obtain_fashion_dataset_labels.py - used to create the train, validation, and test csv files that will be used in the data loader for modeling
@@ -40,7 +40,7 @@ All of the data for this project can be found on [Google Drive](https://drive.go
 
 4) Train models:
 
-***Disclaimer - it takes ~4-12 hours to train each of these models on a NVIDIA Tesla P100 GPU on Google Cloud Platform***
+- ***Disclaimer - it takes ~4-12 hours to train each of these models on a NVIDIA Tesla P100 GPU on Google Cloud Platform***
 
 - baseline_model_template.py - used as a template to create the simple CNNs
 - jessica_model_1-7.py & mary_model_1-2.py - used to train and save the simple CNNs
@@ -48,8 +48,8 @@ All of the data for this project can be found on [Google Drive](https://drive.go
 
 5) Test models: 
 
-densenet_model.py - used to test the densenet161 model
-test_models.py - used to test the simple CNNs and mobilenetv2 model
+- densenet_model.py - used to test the densenet161 model
+- test_models.py - used to test the simple CNNs and mobilenetv2 model
 
 6) Recommendations:
 
