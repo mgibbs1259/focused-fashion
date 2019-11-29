@@ -45,9 +45,3 @@ https://towardsdatascience.com/simple-implementation-of-densely-connected-convol
 
 https://github.com/spotify/annoy
 https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.BallTree.html#sklearn.neighbors.BallTree
-
-## TO DO
-  
-1) Parameter tables and network diagrams - Both 🤞🏻
-2) Presentation - Both
-3) Joint report - Both
