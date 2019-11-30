@@ -44,12 +44,12 @@ All of the data for this project can be found on [Google Drive](https://drive.go
 
 - baseline_model_template.py - used as a template to create the simple CNNs
 - jessica_model_1-7.py & mary_model_1-2.py - used to train and save the simple CNNs
-- mobilenet_model.py - used to train and save the mobilenetv2 model
+- mobilenet_model.py - used to train and save the MobileNetV2 model
 
 #### 5) Test models: 
 
-- densenet_model.py - used to test the densenet161 model
-- test_models.py - used to test the simple CNNs and mobilenetv2 model
+- densenet_model.py - used to test the DenseNet-161 model
+- test_models.py - used to test the simple CNNs and MobileNetV2 model
 
 #### 6) Recommendations:
 
