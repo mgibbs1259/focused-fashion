@@ -9,9 +9,9 @@ from sklearn.neighbors import BallTree
 from torch.utils.data import Dataset, DataLoader
 
 
-EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Data/example_images/jeans"
+EXAMPLE_DIR = "/home/ubuntu/Final-Project-Group8/Recommendations/example_images/jeans"
 EXAMPLE_TYPE = "jeans"
-STORE_DIR = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images"
+STORE_DIR = "/home/ubuntu/Final-Project-Group8/Recommendations/banana_republic_images"
 
 
 def generate_image_mapping_csv(image_dir, csv_name):
@@ -20,14 +20,14 @@ def generate_image_mapping_csv(image_dir, csv_name):
     image_label = os.listdir(image_dir)
     image_dict = {"image_id": image_id, "image_label": image_label}
     image_df = pd.DataFrame(image_dict)
-    image_df.to_csv("/home/ubuntu/Final-Project-Group8/Data/{}.csv".format(csv_name))
+    image_df.to_csv("/home/ubuntu/Final-Project-Group8/Recommendations/{}.csv".format(csv_name))
 
 
 # Generate image mapping csv files
 generate_image_mapping_csv(EXAMPLE_DIR, "{}_example_image".format(EXAMPLE_TYPE))
-EXAMPLE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Data/{}_example_image.csv".format(EXAMPLE_TYPE)
+EXAMPLE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Recommendations/{}_example_image.csv".format(EXAMPLE_TYPE)
 generate_image_mapping_csv(STORE_DIR, "banana_republic_images")
-STORE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Data/banana_republic_images.csv"
+STORE_CSV_PATH = "/home/ubuntu/Final-Project-Group8/Recommendations/banana_republic_images.csv"
 
 
 class FashionDataset(Dataset):
