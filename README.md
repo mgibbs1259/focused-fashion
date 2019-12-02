@@ -24,7 +24,7 @@ pip3 install -r requirements.txt`
 All of the data for this project can be found on [Google Drive](https://drive.google.com/drive/folders/1v9XhqYrJyQy-g-0UGNGZm3h1xCKacDlC?usp=sharing). The data utilized comes from the [Kaggle](https://www.kaggle.com/c/imaterialist-challenge-fashion-2018) competition [iMaterialist Challenge (Fashion) at FGVC5](https://github.com/visipedia/imat_fashion_comp).
 
 ## Code
-#### 1) Clone this repository. Then, download the Final-Project-Group8 directory from [Google Drive](https://drive.google.com/drive/folders/1v9XhqYrJyQy-g-0UGNGZm3h1xCKacDlC?usp=sharing).
+#### 1) Clone this repository. Then, download the Data, Models, and Recommendations directories from [Google Drive](https://drive.google.com/drive/folders/1v9XhqYrJyQy-g-0UGNGZm3h1xCKacDlC?usp=sharing), and place them in the repository directory.
 
 #### 2) Download data:
 
