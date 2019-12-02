@@ -30,32 +30,32 @@ All of the data for this project can be found on [Google Drive](https://drive.go
 
 - ***Disclaimer - it takes ~6 hours to download the fashion dataset***
 
-- download_fashion_dataset.py - used to download the fashion images from fashion image urls
-- obtain_fashion_dataset_labels.py - used to create the train, validation, and test csv files that will be used in the data loader for modeling
+- download_fashion_dataset.py - use to download the fashion images from the fashion image urls
+- obtain_fashion_dataset_labels.py - use to create the train, validation, and test csv files that will be used in the data loader for modeling
 
 #### 3) Exploratory data analysis:
 
-- helper_functions.py - used to find the smallest image size and check the balance of the labels
-- presentation_visualizations.py - used to create various visualizations used in the presentation
+- helper_functions.py - use to find the smallest image size and check the balance of the labels
+- presentation_visualizations.py - use to create various visualizations used in the presentation
 
 #### 4) Train models:
 
 - ***Disclaimer - it takes ~4-12 hours to train each of these models on a NVIDIA Tesla P100 GPU on Google Cloud Platform***
 
-- baseline_model_template.py - used as a template to create the simple CNNs
-- jessica_model_1-7.py & mary_model_1-2.py - used to train and save the simple CNNs
-- mobilenet_model.py - used to train and save the MobileNetV2 model
+- baseline_model_template.py - use as a template to create the simple CNNs
+- jessica_model_1-7.py & mary_model_1-2.py - use to train and save the simple CNNs
+- mobilenet_model.py - use to train and save the MobileNetV2 model
 
 #### 5) Test models: 
 
-- densenet_model.py - used to test the DenseNet-161 model
-- test_models.py - used to test the simple CNNs and MobileNetV2 model
+- densenet_model.py - use to test the DenseNet-161 model
+- test_models.py - use to test the simple CNNs and the MobileNetV2 model
 
 #### 6) Recommendations:
 
-- scrape_banana_republic_images.py - used to scrape women's fashion images from the Banana Republic website
-- baseline_recommendations.py - used to generate baseline KNN ranking recommendations
-- generate_recommendations.py - used to obtain CNN feature extraction-based KNN ranking recommendations
+- scrape_banana_republic_images.py - use to scrape women's fashion images from the Banana Republic website
+- baseline_recommendations.py - use to generate baseline KNN ranking recommendations
+- generate_recommendations.py - use to obtain CNN feature extraction-based KNN ranking recommendations
 
 ## Summary
 #### Problem
