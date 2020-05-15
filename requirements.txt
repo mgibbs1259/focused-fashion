@@ -29,7 +29,7 @@ datalab==1.1.5
 decorator==4.4.0
 defusedxml==0.6.0
 distro==1.0.1
-Django==2.2.7
+Django==2.2.10
 docker==4.1.0
 entrypoints==0.3
 enum34==1.1.6
