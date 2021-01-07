@@ -113,7 +113,7 @@ lazy-object-proxy==1.4.2
 leveldb==0.194
 llvmlite==0.29.0
 lmdb==0.97
-lxml==4.4.1
+lxml==4.6.2
 Markdown==3.1.1
 MarkupSafe==1.1.1
 matplotlib==3.0.3
