@@ -1,4 +1,4 @@
-# Final-Project-Group8
+# Focused Fashion
 
 ## Installation
 
