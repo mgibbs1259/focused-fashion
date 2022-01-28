@@ -166,7 +166,6 @@ py==1.10.0
 pyarrow==0.14.1
 pyasn1==0.4.7
 pyasn1-modules==0.2.6
-pycrypto==2.6.1
 pycurl==7.43.0
 pydaal==2019.0.0.20180713
 pydot==1.4.1
